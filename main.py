@@ -14,10 +14,8 @@ client = Bot(command_prefix=BOT_PREFIX)
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
-SECRET = os.getenv('CLIENT_SECRET') + 'M'
+SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
-print(SECRET)
-print(ID)
 
 reddit = praw.Reddit(client_id=ID,
                             client_secret=SECRET,
@@ -44,7 +42,6 @@ async def title(ctx, *args):
     if not args:
         await ctx.channel.send('Please specify subreddit')
     for submission in reddit.subreddit(args[0]).hot(limit=5):
-        print(submission)
         await ctx.channel.send(submission.title)
 
 @client.command(name = 'quit',
