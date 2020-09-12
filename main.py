@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import os
 
 # comment out these two lines if you are not using spyder
-import nest_asyncio
-nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 
 BOT_PREFIX = ('!')
 client = Bot(command_prefix=BOT_PREFIX)
@@ -16,6 +16,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
+topx = ['top{}'.format(i+1) for i in range(10)]
+baseURL = 'https://www.reddit.com'
 
 reddit = praw.Reddit(client_id=ID,
                             client_secret=SECRET,
@@ -36,20 +38,44 @@ async def hey(ctx):
         return
     await ctx.send('hey {0.author.mention}'.format(ctx.message))
 
-@client.command(name='title',
-                brief='posts the top 5 post titles in a given subreddit')
-async def title(ctx, *args):
+@client.command(name='top',
+                brief='Posts given number of posts from a subreddit.',
+                aliases = topx)
+async def top(ctx, *args):
     if not args:
         await ctx.channel.send('Please specify subreddit')
-    for submission in reddit.subreddit(args[0]).hot(limit=5):
-        await ctx.channel.send(submission.title)
+        return
+    if ctx.invoked_with not in topx:
+        await ctx.channel.send('Invalid command.  Use !help for a list of valid commands.')
+        return
+    lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
+    if not lim:
+        lim = 5
+    lim = int(lim)
 
-@client.command(name = 'quit',
-				brief = 'closes the bot',
-				aliases = ['q', 'e', 'exit'])
-async def quit(ctx):
-    await ctx.send('*exiting*')
-    await client.logout()
+
+    for submission in reddit.subreddit(args[0]).hot(limit=lim):
+        embedVar = discord.Embed(title = submission.title, color = 0xff5700)
+        embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
+        if not submission.is_self:
+            embedVar.set_image(url= submission.url)
+        embedVar.add_field(name="URL:", value=baseURL + submission.permalink)
+        embedVar.add_field(name="Upvotes:", value=submission.score)
+        embedVar.set_thumbnail(
+            url='https://i.imgur.com/5uefD9U.png',
+                  )
+        await ctx.channel.send(embed=embedVar)
+
+
+
+
+#await ctx.channel.send(submission.title)
+#await ctx.channel.send("COMMENT:" + submission.comments[1].body)
+#await ctx.channel.send("UPVOTES: {}".format(submission.score))
+
+
+
+
 
 if __name__ == '__main__':
 	try:
