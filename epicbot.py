@@ -73,7 +73,9 @@ async def hot(ctx, *args):
         post_type = reddit.subreddit(args[0]).new(limit=lim)
 
     for submission in post_type:
-        embedVar = discord.Embed(title = submission.title, color = 0xff5700)
+        new_title = submission.title
+        abridged_title = (new_title[:250] + '...') if len(new_title) > 250 else new_title
+        embedVar = discord.Embed(title = abridged_title, color = 0xff5700)
         embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
         if not submission.is_self:
             embedVar.set_image(url= submission.url)
