@@ -4,11 +4,10 @@ from discord.ext.commands import Bot
 import praw
 from dotenv import load_dotenv
 import os
-from discord.ext import ui
 
 # comment out these two lines if you are not using spyder
-import nest_asyncio
-nest_asyncio.apply()
+# import nest_asyncio
+# nest_asyncio.apply()
 
 BOT_PREFIX = ('!')
 client = Bot(command_prefix=BOT_PREFIX)
@@ -18,105 +17,75 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
 topx = ['top{}'.format(i+1) for i in range(10)]
-
+base_url = 'https://www.reddit.com'
 reddit = praw.Reddit(client_id=ID,
-                            client_secret=SECRET,
-                            user_agent="EpicBot for Reddit")
+                     client_secret=SECRET,
+                     user_agent='EpicBot for Reddit')
+
+
 @client.event
 async def on_ready():
+    """
+    Print messages to indicate a successful login.
+
+    Returns
+    -------
+    None.
+
+    """
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
 
-@client.command(name='hey',
-                brief='The bot says hi',
-                aliases = ['hi','greetings','hello'])
-async def hey(ctx):
-    # we do not want the bot to reply to itself
-    if ctx.message.author.id == client.user.id:
-        return
-    await ctx.send('hey {0.author.mention}'.format(ctx.message))
-
-@client.command(name='name',
-                brief='tell the bot your name')
-async def name(ctx):
-    name = await ui.prompt(ctx, 'What is your name?')
-    await ctx.send(f'Ok, your name is {name}')
-
-@client.command(name='mood',
-                brief='does shit idk lol')
-async def mood(ctx):
-    choices = ['red', 'blue', 'green', 'yellow']
-    colour = await ui.select(ctx, 'What is your favo(u)rite colo(u)r?', choices)
-
-    # Want buttons instead of text? No problem.
-
-    choices = [
-        ui.Choice('Very Happy', button='😄'),
-        ui.Choice('Happy', button='🙂'),
-        ui.Choice('Neutral', button='😐'),
-        ui.Choice('Sad', button='😦'),
-        ui.Choice('Very Sad', button='😢'),
-    ]
-    feeling = await ui.select(ctx, 'How are you feeling today?', choices)
-
-@client.command(name='page',
-                brief='does shit idk lol')
-async def page(ctx):
-    def some_statements():
-        for i in range(20):
-            yield f'This is sentence hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh {i}'
-
-    def format_page(page):
-        return f'This is a page\n{page}'
-
-    paginator = ui.Paginator(some_statements(), page_formatter=format_page)
-    await paginator.start(ctx)
-
-    # And to chunk it:
-
-    def format_chunk(chunk):
-        # Formatters can return embeds too
-        return discord.Embed(description='\n'.join(chunk))
-
-    paginator = ui.Paginator.chunked(some_statements(), 10, page_formatter=format_chunk)
-    await paginator.start(ctx)
-
-
 
 @client.command(name='top',
-                brief='posts the top 5 post titles in a given subreddit',
-                aliases=topx
-                )
+                brief='Post given number of posts from a subreddit.',
+                aliases=topx)
 async def top(ctx, *args):
+    """
+    Post the top x posts from a given subreddit to the channel.
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context in which the command is being invoked under.
+    *args : list
+        The list of transformed arguments that were passed into the command.
+
+    Returns
+    -------
+    None.
+
+    """
     if not args:
         await ctx.channel.send('Please specify subreddit')
+        return
+    if ctx.invoked_with not in topx:
+        await ctx.channel.send('Invalid command.\
+                               Use !help for a list of valid commands.')
         return
     lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
     if not lim:
         lim = 5
-    lim =int(lim)
+    lim = int(lim)
+
     for submission in reddit.subreddit(args[0]).hot(limit=lim):
-        await ctx.channel.send(submission.title)
-
-@top.error
-async def top_error(ctx, error):
-    await ctx.send(error)
-
-
-@client.command(name = 'quit',
-				brief = 'closes the bot',
-				aliases = ['q', 'e', 'exit'])
-async def quit(ctx):
-    await ctx.send('*exiting*')
-    await client.logout()
+        embed = discord.Embed(title=submission.title, color=0xff5700)
+        embed.set_author(name='u/'+submission.author.name,
+                         icon_url=submission.author.icon_img)
+        if not submission.is_self:
+            embed.set_image(url=submission.url)
+        embed.add_field(name='URL:', value=base_url + submission.permalink)
+        embed.add_field(name='Upvotes:', value=submission.score)
+        embed.set_thumbnail(url='https://i.imgur.com/5uefD9U.png')
+        await ctx.channel.send(embed=embed)
 
 if __name__ == '__main__':
-	try:
-		client.run(TOKEN)
-	except KeyboardInterrupt:
-		print('exiting\n')
-		exit(0)
-	except:
-		pass
+    try:
+        client.run(TOKEN)
+    except KeyboardInterrupt:
+        print('exiting\n')
+        exit(0)
+    except:
+        pass
