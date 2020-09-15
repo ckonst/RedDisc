@@ -4,6 +4,7 @@ from discord.ext.commands import Bot
 import praw
 from dotenv import load_dotenv
 import os
+from prawcore import NotFound
 
 # comment out these two lines if you are not using spyder
 #import nest_asyncio
@@ -16,7 +17,10 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
-aliases = ['hot{}'.format(i+1) for i in range(10)]+['top{}'.format(i+1) for i in range(10)]+['new{}'.format(i+1) for i in range(10)]+ ['rising{}'.format(i+1) for i in range(10)]
+aliases = ['hot{}'.format(i+1) for i in range(10)]+\
+          ['top{}'.format(i+1) for i in range(10)]+\
+          ['new{}'.format(i+1) for i in range(10)]+ \
+          ['rising{}'.format(i+1) for i in range(10)]
 topx = ['top{}'.format(i+1) for i in range(10)]
 baseURL = 'https://www.reddit.com'
 
@@ -45,7 +49,10 @@ async def hey(ctx):
                 aliases = aliases)
 async def hot(ctx, *args):
     if not args:
-        await ctx.channel.send('Please specify subreddit')
+        await ctx.channel.send('Please specify subreddit!  Correct usage is: !'+ctx.invoked_with + ' [subreddit]')
+        return
+    if not sub_exists(args[0]):
+        await ctx.channel.send('Specified subreddit "' + args[0] + '" does not exist.')
         return
     if ctx.invoked_with not in aliases:
         await ctx.channel.send('Invalid command.  Use !help for a list of valid commands.')
@@ -73,9 +80,9 @@ async def hot(ctx, *args):
         post_type = reddit.subreddit(args[0]).new(limit=lim)
 
     for submission in post_type:
-        new_title = submission.title
-        abridged_title = (new_title[:250] + '...') if len(new_title) > 250 else new_title
+        abridged_title = (submission.title[:250] + '...') if len(submission.title) > 250 else submission.title
         embedVar = discord.Embed(title = abridged_title, color = 0xff5700)
+        #if user_exists(submission.author.name):
         embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
         if not submission.is_self:
             embedVar.set_image(url= submission.url)
@@ -87,7 +94,21 @@ async def hot(ctx, *args):
         await ctx.channel.send(embed=embedVar)
 
 
+def sub_exists(subreddit):
+    exists = True
+    try:
+        reddit.subreddits.search_by_name(subreddit, exact=True)
+    except NotFound:
+        exists = False
+    return exists
 
+##def user_exists(user):
+    exists = True
+   # try:
+   #     reddit.redditor(user)
+   # except NotFound:
+  #      exists = False
+ #  return exists
 
 #await ctx.channel.send(submission.title)
 #await ctx.channel.send("COMMENT:" + submission.comments[1].body)
