@@ -7,8 +7,13 @@ import os
 
 # comment out these two lines if you are not using spyder
 <<<<<<< HEAD
+<<<<<<< HEAD
 import nest_asyncio
 nest_asyncio.apply()
+=======
+# import nest_asyncio
+# nest_asyncio.apply()
+>>>>>>> Christian
 =======
 # import nest_asyncio
 # nest_asyncio.apply()
@@ -22,6 +27,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
 <<<<<<< HEAD
+<<<<<<< HEAD
 aliases = ['hot{}'.format(i+1) for i in range(10)]+['top{}'.format(i+1) for i in range(10)]+['new{}'.format(i+1) for i in range(10)]+ ['rising{}'.format(i+1) for i in range(10)]
 topx = ['top{}'.format(i+1) for i in range(10)]
 baseURL = 'https://www.reddit.com'
@@ -33,6 +39,8 @@ reddit = praw.Reddit(client_id=ID,
 @client.event
 async def on_ready():
 =======
+=======
+>>>>>>> Christian
 topx = ['top{}'.format(i+1) for i in range(10)]
 base_url = 'https://www.reddit.com'
 reddit = praw.Reddit(client_id=ID,
@@ -50,12 +58,16 @@ async def on_ready():
     None.
 
     """
+<<<<<<< HEAD
+>>>>>>> Christian
+=======
 >>>>>>> Christian
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 @client.command(name='hey',
                 brief='The bot says hi',
@@ -76,6 +88,8 @@ async def hot(ctx, *args):
     if ctx.invoked_with not in aliases:
         await ctx.channel.send('Invalid command.  Use !help for a list of valid commands.')
 =======
+=======
+>>>>>>> Christian
 
 @client.command(name='top',
                 brief='Post given number of posts from a subreddit.',
@@ -102,6 +116,9 @@ async def top(ctx, *args):
     if ctx.invoked_with not in topx:
         await ctx.channel.send('Invalid command.\
                                Use !help for a list of valid commands.')
+<<<<<<< HEAD
+>>>>>>> Christian
+=======
 >>>>>>> Christian
         return
     lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
@@ -109,6 +126,7 @@ async def top(ctx, *args):
         lim = 5
     lim = int(lim)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -161,6 +179,8 @@ if __name__ == '__main__':
 	except:
 		pass
 =======
+=======
+>>>>>>> Christian
     for submission in reddit.subreddit(args[0]).hot(limit=lim):
         embed = discord.Embed(title=submission.title, color=0xff5700)
         embed.set_author(name='u/'+submission.author.name,
@@ -180,4 +200,7 @@ if __name__ == '__main__':
         exit(0)
     except:
         pass
+<<<<<<< HEAD
+>>>>>>> Christian
+=======
 >>>>>>> Christian
