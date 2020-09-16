@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import os
 
 # comment out these two lines if you are not using spyder
-# import nest_asyncio
-# nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 
 BOT_PREFIX = ('!')
 client = Bot(command_prefix=BOT_PREFIX)
@@ -21,6 +21,18 @@ base_url = 'https://www.reddit.com'
 reddit = praw.Reddit(client_id=ID,
                      client_secret=SECRET,
                      user_agent='EpicBot for Reddit')
+
+
+def parse_ext(url):
+    extensions = ['gif', 'jpg', 'png']
+    chars = set(extensions)
+    s = url
+    if any((c in chars) for c in s):
+        print('Found')
+    else:
+        s = s + '.jpg'
+        print('Not Found')
+    return s
 
 
 @client.event
@@ -62,8 +74,7 @@ async def top(ctx, *args):
         await ctx.channel.send('Please specify subreddit')
         return
     if ctx.invoked_with not in topx:
-        await ctx.channel.send('Invalid command.\
-                               Use !help for a list of valid commands.')
+        await ctx.channel.send('Invalid command.\ Use !help for a list of valid commands.')
         return
     lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
     if not lim:
@@ -72,14 +83,14 @@ async def top(ctx, *args):
 
     for submission in reddit.subreddit(args[0]).hot(limit=lim):
         embed = discord.Embed(title=submission.title, color=0xff5700)
-        embed.set_author(name='u/'+submission.author.name,
-                         icon_url=submission.author.icon_img)
+        embed.set_author(name='u/'+submission.author.name, icon_url=submission.author.icon_img)
         if not submission.is_self:
-            embed.set_image(url=submission.url)
+            embed.set_image(url=parse_ext(submission.url))
         embed.add_field(name='URL:', value=base_url + submission.permalink)
         embed.add_field(name='Upvotes:', value=submission.score)
         embed.set_thumbnail(url='https://i.imgur.com/5uefD9U.png')
         await ctx.channel.send(embed=embed)
+        
 
 if __name__ == '__main__':
     try:
@@ -89,3 +100,4 @@ if __name__ == '__main__':
         exit(0)
     except:
         pass
+    
