@@ -27,7 +27,7 @@ def parse_ext(url):
     extensions = ['gif', 'jpg', 'png']
     chars = set(extensions)
     s = url
-    if any((c in chars) for c in s):
+    if any((c in s) for c in chars):
         print('Found')
     else:
         s = s + '.jpg'
