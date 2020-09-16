@@ -103,7 +103,7 @@ def sub_exists(subreddit):
     return exists
 
 ##def user_exists(user):
-    exists = True
+    #exists = True
    # try:
    #     reddit.redditor(user)
    # except NotFound:
