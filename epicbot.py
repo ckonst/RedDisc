@@ -17,11 +17,14 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
-aliases = ['hot{}'.format(i+1) for i in range(10)]+\
+subreddit_aliases = ['hot{}'.format(i+1) for i in range(10)]+\
           ['top{}'.format(i+1) for i in range(10)]+\
           ['new{}'.format(i+1) for i in range(10)]+ \
           ['rising{}'.format(i+1) for i in range(10)]
-topx = ['top{}'.format(i+1) for i in range(10)]
+
+search_aliases = ['search{}'.format(i+1) for i in range(10)]
+
+#topx = ['top{}'.format(i+1) for i in range(10)]
 baseURL = 'https://www.reddit.com'
 
 
@@ -46,15 +49,20 @@ async def hey(ctx):
 
 @client.command(name='Post',
                 brief='Posts given number of posts from a subreddit.',
-                aliases = aliases)
+                aliases = subreddit_aliases+search_aliases)
 async def hot(ctx, *args):
     if not args:
-        await ctx.channel.send('Please specify subreddit!  Correct usage is: !'+ctx.invoked_with + ' [subreddit]')
+        if ctx.invoked_with in subreddit_aliases:
+            await ctx.channel.send('Please specify subreddit!  Correct usage is: !'+ctx.invoked_with + ' [subreddit]')
+        if ctx.invoked_with in search_aliases:
+            await ctx.channel.send('Please specify what to search for!  Correct usage is: !' + ctx.invoked_with + ' [word to search]')
+        else:
+            await ctx.channel.send('Incorrect command!')
         return
     if not sub_exists(args[0]):
         await ctx.channel.send('Specified subreddit "' + args[0] + '" does not exist.')
         return
-    if ctx.invoked_with not in aliases:
+    if ctx.invoked_with not in subreddit_aliases+search_aliases:
         await ctx.channel.send('Invalid command.  Use !help for a list of valid commands.')
         return
     lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
@@ -78,6 +86,8 @@ async def hot(ctx, *args):
         post_type = reddit.subreddit(args[0]).rising(limit=lim)
     elif command == 'rising':
         post_type = reddit.subreddit(args[0]).new(limit=lim)
+    elif command == 'search':
+        post_type = reddit.subreddit("all").search(args[0], limit=lim)
 
     for submission in post_type:
         abridged_title = (submission.title[:250] + '...') if len(submission.title) > 250 else submission.title
@@ -86,12 +96,15 @@ async def hot(ctx, *args):
         embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
         if not submission.is_self:
             embedVar.set_image(url= submission.url)
+            #print(submission.url)
         embedVar.add_field(name="URL:", value=baseURL + submission.permalink)
         embedVar.add_field(name="Upvotes:", value=submission.score)
         embedVar.set_thumbnail(
             url='https://i.imgur.com/5uefD9U.png',
                   )
         await ctx.channel.send(embed=embedVar)
+
+
 
 
 def sub_exists(subreddit):
@@ -103,7 +116,7 @@ def sub_exists(subreddit):
     return exists
 
 ##def user_exists(user):
-    exists = True
+    #exists = True
    # try:
    #     reddit.redditor(user)
    # except NotFound:
