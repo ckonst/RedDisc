@@ -56,8 +56,7 @@ async def hot(ctx, *args):
             await ctx.channel.send('Please specify subreddit!  Correct usage is: !'+ctx.invoked_with + ' [subreddit]')
         if ctx.invoked_with in search_aliases:
             await ctx.channel.send('Please specify what to search for!  Correct usage is: !' + ctx.invoked_with + ' [word to search]')
-        else:
-            await ctx.channel.send('Incorrect command!')
+
         return
     if not sub_exists(args[0]):
         await ctx.channel.send('Specified subreddit "' + args[0] + '" does not exist.')
@@ -87,13 +86,17 @@ async def hot(ctx, *args):
     elif command == 'rising':
         post_type = reddit.subreddit(args[0]).new(limit=lim)
     elif command == 'search':
-        post_type = reddit.subreddit("all").search(args[0], limit=lim)
+        post_type = reddit.subreddit("all").search(args_add(args), limit=lim)
+
+
 
     for submission in post_type:
         abridged_title = (submission.title[:250] + '...') if len(submission.title) > 250 else submission.title
         embedVar = discord.Embed(title = abridged_title, color = 0xff5700)
-        #if user_exists(submission.author.name):
-        embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
+        if user_exists(submission.author.name):
+            embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
+        else:
+            embedVar.set_author(name="u/deleted", icon_url = 'https://i.imgur.com/ELSjbx7.png')
         if not submission.is_self:
             embedVar.set_image(url= submission.url)
             #print(submission.url)
@@ -115,13 +118,24 @@ def sub_exists(subreddit):
         exists = False
     return exists
 
-##def user_exists(user):
-    #exists = True
-   # try:
-   #     reddit.redditor(user)
-   # except NotFound:
-  #      exists = False
- #  return exists
+def user_exists(user):
+    try:
+        if getattr(reddit.redditor(user), 'is_suspended', False):
+            return False
+    except NotFound:
+        return False
+
+    else:
+        return True
+
+
+# account exists
+
+def args_add(args):
+    new_args = ' '.join(args)
+    return new_args
+
+
 
 #await ctx.channel.send(submission.title)
 #await ctx.channel.send("COMMENT:" + submission.comments[1].body)
