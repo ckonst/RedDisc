@@ -97,9 +97,11 @@ async def hot(ctx, *args):
             embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
         else:
             embedVar.set_author(name="u/deleted", icon_url = 'https://i.imgur.com/ELSjbx7.png')
-        if not submission.is_self:
-            embedVar.set_image(url= submission.url)
-            #print(submission.url)
+
+        new_url = url_morph(submission.url)
+        if not submission.is_self and parse_url(new_url):
+            embedVar.set_image(url= new_url)
+        print(submission.url)
         embedVar.add_field(name="URL:", value=baseURL + submission.permalink)
         embedVar.add_field(name="Upvotes:", value=submission.score)
         embedVar.set_thumbnail(
@@ -134,6 +136,21 @@ def user_exists(user):
 def args_add(args):
     new_args = ' '.join(args)
     return new_args
+
+def parse_url(url):
+    extensions = ['gif', 'jpg', 'png']
+    chars = set(extensions)
+    if any((i in url) for i in extensions):
+        return True;
+    else:
+        return False;
+
+def url_morph(url):
+    if 'gifv' in url:
+        url = url[:-1:]
+    if 'imgur' in url and 'jpg' not in url:
+        url += '.jpg'
+    return url
 
 
 
