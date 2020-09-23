@@ -76,7 +76,7 @@ async def hot(ctx, *args):
     if sort_by == 'search':
         results = reddit.subreddit("all").search(args_add(args), limit=lim)
     else:
-        results = getattr(reddit.subreddit(sub), sort_by)(args_add(args), limit=lim)
+        results = getattr(reddit.subreddit(sub), sort_by)(limit=lim)
 
 
     for submission in results:
