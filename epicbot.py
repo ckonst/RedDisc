@@ -38,7 +38,7 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-@client.command(name='hot',
+@client.command(name='post',
                 brief='Posts given number of posts from a subreddit.',
                 aliases = aliases)
 async def hot(ctx, *args):
@@ -73,7 +73,10 @@ async def hot(ctx, *args):
     if not lim:
         lim = 5
     lim = int(lim)
-    results = getattr(reddit.subreddit(sub), sort_by)(limit=lim)
+    if sort_by == 'search':
+        results = reddit.subreddit("all").search(args_add(args), limit=lim)
+    else:
+        results = getattr(reddit.subreddit(sub), sort_by)(args_add(args), limit=lim)
 
 
     for submission in results:
