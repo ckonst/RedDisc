@@ -113,6 +113,17 @@ async def hot(ctx, *args):
 
 
 def sub_exists(subreddit):
+    """
+    Return whether a given subreddit exists.
+    Parameters
+    ----------
+    subreddit : praw.models.Subreddit
+        The subreddit object to check.
+    Returns
+    -------
+    exists : boolean
+        whether or not the subreddit exists.
+    """
     exists = True
     try:
         reddit.subreddits.search_by_name(subreddit, exact=True)
