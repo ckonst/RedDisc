@@ -17,15 +17,9 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
-subreddit_aliases = ['hot{}'.format(i+1) for i in range(10)]+\
-          ['top{}'.format(i+1) for i in range(10)]+\
-          ['new{}'.format(i+1) for i in range(10)]+ \
-          ['rising{}'.format(i+1) for i in range(10)]
-
-search_aliases = ['search{}'.format(i+1) for i in range(10)]
-
-#topx = ['top{}'.format(i+1) for i in range(10)]
-baseURL = 'https://www.reddit.com'
+sort = ['hot', 'top', 'new', 'rising', 'search']
+aliases = [f'{s}{j}' for j in range(1, 11) for s in sort] + sort
+base_url = 'https://www.reddit.com'
 
 
 reddit = praw.Reddit(client_id=ID,
@@ -33,81 +27,73 @@ reddit = praw.Reddit(client_id=ID,
                             user_agent="EpicBot for Reddit")
 @client.event
 async def on_ready():
+    """
+    Print messages to indicate a successful login.
+    Returns
+    -------
+    None.
+    """
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
 
-@client.command(name='hey',
-                brief='The bot says hi',
-                aliases = ['hi','greetings','hello'])
-async def hey(ctx):
-    # we do not want the bot to reply to itself
-    if ctx.message.author.id == client.user.id:
-        return
-    await ctx.send('hey {0.author.mention}'.format(ctx.message))
-
-@client.command(name='Post',
+@client.command(name='hot',
                 brief='Posts given number of posts from a subreddit.',
-                aliases = subreddit_aliases+search_aliases)
+                aliases = aliases)
 async def hot(ctx, *args):
+    """
+       Returns a given number of posts, up to 10, sorted by the alias that this was invoked with.
+       Parameters
+       ----------
+       ctx : discord.ext.commands.Context
+           The context in which this command was called.
+       *args : list
+           The arguments that the user passed through.
+           If the user does not specify a subreddit, or the given subreddit does not exist, send an error message.
+       Returns
+       -------
+       None.
+       """
+    command = ctx.invoked_with
     if not args:
-        if ctx.invoked_with in subreddit_aliases:
-            await ctx.channel.send('Please specify subreddit!  Correct usage is: !'+ctx.invoked_with + ' [subreddit]')
-        if ctx.invoked_with in search_aliases:
-            await ctx.channel.send('Please specify what to search for!  Correct usage is: !' + ctx.invoked_with + ' [word to search]')
+        if 'search' in command:
+            await ctx.channel.send(f'Please specify what to search for!  Correct usage is: !{command} [search terms]')
+        else:
+            await ctx.channel.send(f'Please specify subreddit! Correct usage is: !{command} [subreddit]')
+        return
+    sub = args[0]
+    if not sub_exists(sub):
+        await ctx.channel.send(f'Specified subreddit {sub} does not exist.')
+        return
 
-        return
-    if not sub_exists(args[0]):
-        await ctx.channel.send('Specified subreddit "' + args[0] + '" does not exist.')
-        return
-    if ctx.invoked_with not in subreddit_aliases+search_aliases:
-        await ctx.channel.send('Invalid command.  Use !help for a list of valid commands.')
-        return
-    lim = ''.join(c for c in ctx.invoked_with if c.isdigit())
+    # extract sort method and retrieval count from command
+    sort_by = ''.join([s for s in sort if s in command]).lower()
+    lim = command.replace(sort_by, '')
     if not lim:
         lim = 5
     lim = int(lim)
+    results = getattr(reddit.subreddit(sub), sort_by)(limit=lim)
 
 
-
-    command = ''.join(c for c in ctx.invoked_with if not c.isdigit()).lower()
-
-
-    post_type = None
-
-
-    if command == 'hot':
-        post_type = reddit.subreddit(args[0]).hot(limit=lim)
-    elif command == 'top':
-        post_type = reddit.subreddit(args[0]).top(limit=lim)
-    elif command == 'new':
-        post_type = reddit.subreddit(args[0]).rising(limit=lim)
-    elif command == 'rising':
-        post_type = reddit.subreddit(args[0]).new(limit=lim)
-    elif command == 'search':
-        post_type = reddit.subreddit("all").search(args_add(args), limit=lim)
-
-
-
-    for submission in post_type:
-        abridged_title = (submission.title[:250] + '...') if len(submission.title) > 250 else submission.title
-        embedVar = discord.Embed(title = abridged_title, color = 0xff5700)
+    for submission in results:
+        abridged_title = (submission.title[:250])
+        if len(submission.title) > 250:
+            abridged_title += '...'
+        embed = discord.Embed(title = abridged_title, color = 0xff5700)
         if user_exists(submission.author.name):
-            embedVar.set_author(name="u/"+submission.author.name, icon_url= submission.author.icon_img)
+            embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
         else:
-            embedVar.set_author(name="u/deleted", icon_url = 'https://i.imgur.com/ELSjbx7.png')
+            embed.set_author(name="u/deleted", icon_url = 'https://i.imgur.com/ELSjbx7.png')
 
         new_url = url_morph(submission.url)
         if not submission.is_self and parse_url(new_url):
-            embedVar.set_image(url= new_url)
+            embed.set_image(url= new_url)
         print(submission.url)
-        embedVar.add_field(name="URL:", value=baseURL + submission.permalink)
-        embedVar.add_field(name="Upvotes:", value=submission.score)
-        embedVar.set_thumbnail(
-            url='https://i.imgur.com/5uefD9U.png',
-                  )
-        await ctx.channel.send(embed=embedVar)
+        embed.add_field(name="URL:", value=base_url + submission.permalink)
+        embed.add_field(name="Upvotes:", value=submission.score)
+        embed.set_thumbnail(url='https://i.imgur.com/5uefD9U.png')
+        await ctx.channel.send(embed=embed)
 
 
 
@@ -159,7 +145,7 @@ def parse_url(url):
 def url_morph(url):
     if 'gifv' in url:
         url = url[:-1:]
-    if 'imgur' in url and 'jpg' not in url:
+    if ' imgur'in url and 'jpg' not in url:
         url += '.jpg'
     return url
 
