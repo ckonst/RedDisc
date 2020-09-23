@@ -141,9 +141,9 @@ def parse_url(url):
     extensions = ['gif', 'jpg', 'png']
     chars = set(extensions)
     if any((i in url) for i in extensions):
-        return True;
+        return True
     else:
-        return False;
+        return False
 
 def url_morph(url):
     if 'gifv' in url:
