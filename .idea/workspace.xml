@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5ece4717-d11d-4ccc-ae2e-354354be2c1f" name="Default Changelist" comment="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <change beforePath="$PROJECT_DIR$/epicbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/epicbot.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Paul" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="c31d151c-e1ed-4e09-9bf8-d1b9fe7b3241" />
+  <component name="ProjectId" id="1hR8efNuVod8d8uC1Mwpeq5GppJ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="epicbot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\parma\anaconda3\envs\dCord\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/epicbot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.epicbot" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Added embeds and all post categorizations for subreddits">
+      <created>1599962468179</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1599962468179</updated>
+    </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5ece4717-d11d-4ccc-ae2e-354354be2c1f" name="Default Changelist" comment="Added embeds and all post categorizations for subreddits" />
+      <created>1599962641799</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599962641799</updated>
+      <workItem from="1599962642801" duration="1189000" />
+      <workItem from="1599963838954" duration="148000" />
+      <workItem from="1599963994215" duration="302000" />
+      <workItem from="1599964728402" duration="633000" />
+      <workItem from="1599965395275" duration="106000" />
+      <workItem from="1599966556567" duration="263000" />
+      <workItem from="1600101547968" duration="3719000" />
+      <workItem from="1600105302634" duration="600000" />
+      <workItem from="1600209935906" duration="4151000" />
+      <workItem from="1600525174361" duration="3114000" />
+      <workItem from="1600528303928" duration="358000" />
+      <workItem from="1600534367477" duration="604000" />
+      <workItem from="1600546395232" duration="1230000" />
+      <workItem from="1600576762769" duration="1728000" />
+      <workItem from="1600615530363" duration="9291000" />
+      <workItem from="1600666177828" duration="4485000" />
+      <workItem from="1600748356342" duration="1048000" />
+      <workItem from="1600813003189" duration="2051000" />
+      <workItem from="1600816942624" duration="66000" />
+      <workItem from="1600829900207" duration="411000" />
+      <workItem from="1600874103189" duration="1206000" />
+      <workItem from="1600884052531" duration="3820000" />
+    </task>
+    <task id="LOCAL-00002" summary="Added embeds and all post categorizations for subreddits.  Added character limit for titles">
+      <created>1599964149321</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1599964149321</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added error checking for existence of subreddit, fixed title character limit check">
+      <created>1600210481695</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1600210481695</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added search functionality, currently defaulting to &quot;relevant&quot; posts">
+      <created>1600528385640</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1600528385640</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Added checks for user suspended/deleted.  Added argument concatinate function for combing arguments used with search commands">
+      <created>1600636277716</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1600636277716</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <created>1600670527005</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1600670527005</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <created>1600829910577</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1600829910577</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <created>1600885001063</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1600885001063</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <created>1600886756050</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1600886756050</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed">
+      <created>1600887794424</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1600887794424</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added embeds and all post categorizations for subreddits" />
+    <MESSAGE value="Added embeds and all post categorizations for subreddits.  Added character limit for titles" />
+    <MESSAGE value="Added error checking for existence of subreddit, fixed title character limit check" />
+    <MESSAGE value="Added search functionality, currently defaulting to &quot;relevant&quot; posts" />
+    <MESSAGE value="Added checks for user suspended/deleted.  Added argument concatinate function for combing arguments used with search commands" />
+    <MESSAGE value="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added two functions: One for modifying image urls for valid embedding, and another for checking for image extension to determine if embed image is needed" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="698" y="344" key="#Notifications" timestamp="1599964565562">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="698" y="344" key="#Notifications/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599964565562" />
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599962352752">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599962352752" />
+    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1599965360333">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599965360333" />
+    <state width="914" height="347" key="GridCell.Tab.0.bottom" timestamp="1600887875501">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770807" />
+    <state width="914" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875501" />
+    <state width="1860" height="244" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600636315147" />
+    <state width="914" height="347" key="GridCell.Tab.0.center" timestamp="1600887875500">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
+    <state width="914" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875500" />
+    <state width="1860" height="244" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600636315147" />
+    <state width="914" height="347" key="GridCell.Tab.0.left" timestamp="1600887875500">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
+    <state width="914" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875500" />
+    <state width="1860" height="244" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600636315147" />
+    <state width="914" height="347" key="GridCell.Tab.0.right" timestamp="1600887875500">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
+    <state width="914" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875500" />
+    <state width="1860" height="244" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600636315147" />
+    <state width="914" height="347" key="GridCell.Tab.1.bottom" timestamp="1600887875501">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="914" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875501" />
+    <state width="914" height="347" key="GridCell.Tab.1.center" timestamp="1600887875501">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="914" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875501" />
+    <state width="914" height="347" key="GridCell.Tab.1.left" timestamp="1600887875501">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="914" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875501" />
+    <state width="914" height="347" key="GridCell.Tab.1.right" timestamp="1600887875501">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="914" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887875501" />
+    <state x="-1736" y="86" key="MergeDialog" timestamp="1600883693154">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1736" y="86" key="MergeDialog/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1600883693154" />
+    <state x="184" y="86" key="MergeDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599963879294" />
+    <state x="-1322" y="281" key="MultipleFileMergeDialog" timestamp="1600883694510">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1322" y="281" key="MultipleFileMergeDialog/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1600883694510" />
+    <state x="598" y="281" key="MultipleFileMergeDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599963952230" />
+    <state x="461" y="165" key="SettingsEditor" timestamp="1600547061398">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1459" y="165" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964747671" />
+    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599965406023" />
+    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1600547061398" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1600887803870">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600887803870" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1600636304604" />
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1599964376488">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599964376488" />
+    <state x="777" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600886744452">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1143" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1600884995264" />
+    <state x="777" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600886744452" />
+    <state x="740" y="233" key="git4idea.branch.GitSmartOperationDialog" timestamp="1600210340289">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="233" key="git4idea.branch.GitSmartOperationDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1600210340289" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/epicbot$main.coverage" NAME="main Coverage Results" MODIFIED="1599955838806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/epicbot$epicbot.coverage" NAME="epicbot Coverage Results" MODIFIED="1600887875492" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
