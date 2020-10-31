@@ -130,7 +130,7 @@
       <workItem from="1603323487706" duration="12994000" />
       <workItem from="1603396964309" duration="2443000" />
       <workItem from="1604110155408" duration="6591000" />
-      <workItem from="1604116790560" duration="1220000" />
+      <workItem from="1604116790560" duration="3887000" />
     </task>
     <task id="LOCAL-00002" summary="Added embeds and all post categorizations for subreddits.  Added character limit for titles">
       <created>1599964149321</created>
@@ -216,7 +216,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603335706028</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Changed initial url in embed to be full URL and made all adjustments needed, removed URL field, added more to user embeds, removed url portion from user URL embed if called from !user, added function for creating a user embed for deleted user, added checking for suspended AND deleted users, added that functionality into on_raw_reaction_add to call deleted user embed function&#10;Added self post emoji, added ability to view post body">
+      <created>1604118147040</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1604118147040</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -269,29 +276,29 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599965360333" />
-    <state width="1877" height="327" key="GridCell.Tab.0.bottom" timestamp="1604118010136">
+    <state width="1877" height="327" key="GridCell.Tab.0.bottom" timestamp="1604118079492">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770807" />
-    <state width="1877" height="327" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118010136" />
+    <state width="1877" height="327" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118079492" />
     <state width="1137" height="260" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1877" height="327" key="GridCell.Tab.0.center" timestamp="1604118010136">
+    <state width="1877" height="327" key="GridCell.Tab.0.center" timestamp="1604118079492">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
-    <state width="1877" height="327" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118010136" />
+    <state width="1877" height="327" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118079492" />
     <state width="1137" height="260" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1877" height="327" key="GridCell.Tab.0.left" timestamp="1604118010136">
+    <state width="1877" height="327" key="GridCell.Tab.0.left" timestamp="1604118079492">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
-    <state width="1877" height="327" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118010136" />
+    <state width="1877" height="327" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118079492" />
     <state width="1137" height="260" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1877" height="327" key="GridCell.Tab.0.right" timestamp="1604118010136">
+    <state width="1877" height="327" key="GridCell.Tab.0.right" timestamp="1604118079492">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964770806" />
-    <state width="1877" height="327" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118010136" />
+    <state width="1877" height="327" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1604118079492" />
     <state width="1137" height="260" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
     <state width="914" height="347" key="GridCell.Tab.1.bottom" timestamp="1600888002265">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -350,6 +357,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/epicbot$main.coverage" NAME="main Coverage Results" MODIFIED="1599955838806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/epicbot$epicbot.coverage" NAME="epicbot Coverage Results" MODIFIED="1604118010129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/epicbot$epicbot.coverage" NAME="epicbot Coverage Results" MODIFIED="1604118079487" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

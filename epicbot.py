@@ -24,7 +24,8 @@ ID = os.getenv('CLIENT_ID')
 sort = ['hot', 'top', 'new', 'rising', 'search']
 aliases = [f'{s}{j}' for j in range(1, 11) for s in sort]
 emojis = ['📃','📄', '👤', '💬' ]
-search_sorts = ['relevance', 'top', 'new', 'comments']
+search_sorts = ['relevance', 'top', 'new', 'comments'
+                                           '']
 filters = ['all', 'hour', 'day', 'week', 'month', 'year']
 base_url = 'https://www.reddit.com'
 title_lim = 250
@@ -114,17 +115,13 @@ async def post(ctx, *args):
 
     #TODO: use a default subreddit instead of sending this message.
     if not args:
-        await ctx.channel.send(f'Please specify subreddit! Correct usage is: !{command} [subreddit]')
+        await ctx.send(f'Please specify subreddit! Correct usage is: !{command} [subreddit]')
         return
     sub = args[0]
 
 
     #extract options from args
     args, options = extract_options(args)
-
-    print(args)
-    print(options)
-
 
     #extract sort method and retrieval count from command
     sort_by, lim = extract_command_info(command)
@@ -146,16 +143,16 @@ async def post(ctx, *args):
 
     else:
         if not sub_exists(sub):
-            await ctx.channel.send(f'Specified subreddit {sub} does not exist.')
+            await ctx.send(f'Specified subreddit {sub} does not exist.')
             return
         #get the number of stickied posts, so we can ignore them.
-        num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim) if s.stickied])
-        results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied][:lim]
+        num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=10) if s.stickied])
+        results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied]
 
     #make requests for each submission and format them into discord embeds.
     for submission in results:
         embed = create_submission_embed(submission)
-        message = await ctx.channel.send(embed=embed)
+        message = await ctx.send(embed=embed)
         for emoji in emojis:
             await message.add_reaction(emoji)
 @client.command(name='user',
@@ -165,18 +162,14 @@ async def user(ctx, *args):
     if user_exists(reddit.redditor(args[0]).name):
         result = reddit.redditor(args[0])
         embed = create_user_embed(result)
-        await ctx.channel.send(embed=embed)
     else:
         embed = create_empty_user_embed(reddit.redditor(args[0]).name)
-        await ctx.channel.send(embed=embed)
+    await ctx.send(embed=embed)
 
 
 
 def create_user_embed(redditor, url=''):
-    if url == '':
-        embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0xff5700)
-    else:
-        embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0xff5700, description=url)
+    embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0xff5700, description=url)
     embed.set_author(name=f'u/{redditor.name}', icon_url=redditor.icon_img)
     embed.set_thumbnail(url=redditor.icon_img)
     embed.add_field(name='User\'s Karma: ', value=redditor.comment_karma + redditor.link_karma)
@@ -192,12 +185,8 @@ def create_user_embed(redditor, url=''):
     return embed
 
 def create_empty_user_embed(redditor, url=''):
-    if url == '':
-        embed = discord.Embed(title=f'User {redditor} does not exist, or has been deleted.', color=0xff5700)
-    else:
-        embed = discord.Embed(title=f'User {redditor} does not exist, or has been deleted.', color=0xff5700, description=url)
+    return discord.Embed(title=f'{redditor.name}\'s Profile', color=0xff5700, description=url)
 
-    return embed
 
 def create_submission_embed(submission):
     """
@@ -215,8 +204,8 @@ def create_submission_embed(submission):
 
     """
     url = submission.permalink
-    abridged_title = (submission.title[:250])
-    if len(submission.title) > 250:
+    abridged_title = (submission.title[:title_lim])
+    if len(submission.title) > title_lim:
         abridged_title += '...'
     embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url+url)
     if user_exists(submission.author):
@@ -233,8 +222,8 @@ def create_submission_embed(submission):
 
 def create_body_embed(submission):
     url = submission.permalink
-    abridged_title = (submission.title[:250])
-    if len(submission.title) > 250:
+    abridged_title = (submission.title[:title_lim])
+    if len(submission.title) > title_lim:
         abridged_title += '...'
     embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
 
@@ -244,8 +233,8 @@ def create_body_embed(submission):
         embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
 
     if submission.is_self:
-        abridged_text = (submission.selftext[:1020])
-        if len(submission.selftext) > 1020:
+        abridged_text = (submission.selftext[:body_lim])
+        if len(submission.selftext) > body_lim:
             abridged_text += '...'
         embed.add_field(name='Text:', value=abridged_text)
     else:
@@ -254,8 +243,8 @@ def create_body_embed(submission):
 
 def create_comment_embed(submission):
     url = submission.permalink
-    abridged_title = (submission.title[:250])
-    if len(submission.title) > 250:
+    abridged_title = (submission.title[:title_lim])
+    if len(submission.title) > title_lim:
         abridged_title += '...'
     embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
     if user_exists(submission.author):
@@ -269,11 +258,12 @@ def create_comment_embed(submission):
     for i, v in enumerate(best_comments):
         if i == 10:
             break
-        embed.add_field(name=f'{v.author.name} - {v.score} points' , value=v.body[:100]+'...', inline = False)
-
+        if user_exists(v.author):
+            embed.add_field(name=f'{v.author.name} - {v.score} points' , value=v.body[:100]+'...', inline = False)
+        else:
+            embed.add_field(name=f'u/deleted - {v.score} points', value=v.body[:100] + '...', inline=False)
     if not best_comments:
         embed.add_field(name='No comments!', value='This post contains no comments.', inline=False)
-
     return embed
 
 
