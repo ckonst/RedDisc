@@ -23,8 +23,12 @@ SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
 sort = ['hot', 'top', 'new', 'rising', 'search']
 aliases = [f'{s}{j}' for j in range(1, 11) for s in sort]
-emojis = ['\U0001F4C3','📄', '👤']
+emojis = ['📃','📄', '👤', '💬' ]
+search_sorts = ['relevance', 'top', 'new', 'comments']
+filters = ['all', 'hour', 'day', 'week', 'month', 'year']
 base_url = 'https://www.reddit.com'
+title_lim = 250
+body_lim = 1020
 
 def is_me(_id):
     return _id == client.user.id
@@ -66,7 +70,7 @@ async def on_raw_reaction_add(payload):
         message = await client.get_channel(payload.channel_id).fetch_message(m_id)
         embed = message.embeds[0]
         await message.remove_reaction(payload.emoji, client.get_user(payload.user_id))
-        if payload.emoji.name == '\U0001F4C3' and message.author.id == client.user.id:
+        if payload.emoji.name == '📃' and message.author.id == client.user.id:
             submission = reddit.submission(url=embed.description)
             new_embed = create_submission_embed(submission)
         elif payload.emoji.name == '👤' and message.author.id == client.user.id:
@@ -77,6 +81,9 @@ async def on_raw_reaction_add(payload):
         elif payload.emoji.name == '📄' and message.author.id == client.user.id:
             submission = reddit.submission(url=embed.description)
             new_embed = create_body_embed(submission)
+        elif payload.emoji.name == '💬' and message.author.id == client.user.id:
+            submission = reddit.submission(url=embed.description)
+            new_embed = create_comment_embed(submission)
         await message.edit(embed=new_embed)
 
 #TODO: seperate into functions for readability.
@@ -110,17 +117,37 @@ async def post(ctx, *args):
         await ctx.channel.send(f'Please specify subreddit! Correct usage is: !{command} [subreddit]')
         return
     sub = args[0]
-    if not sub_exists(sub):
-        await ctx.channel.send(f'Specified subreddit {sub} does not exist.')
-        return
+
+
+    #extract options from args
+    args, options = extract_options(args)
+
+    print(args)
+    print(options)
+
 
     #extract sort method and retrieval count from command
     sort_by, lim = extract_command_info(command)
 
     #TODO: fucking fix this
     if sort_by == 'search':
-        results = reddit.subreddit("all").search(to_query_string(args), limit=lim)
+        sort_by = 'relevance'
+        tf = 'all'
+        sub = 'all'
+        if options:
+            for o in options:
+                if o in search_sorts:
+                    sort_by = o
+                elif o in filters:
+                    tf = o
+                elif sub_exists(o):
+                    sub = o
+        results = reddit.subreddit(sub).search(to_query_string(args), sort = sort_by, time_filter = tf, limit=lim)
+
     else:
+        if not sub_exists(sub):
+            await ctx.channel.send(f'Specified subreddit {sub} does not exist.')
+            return
         #get the number of stickied posts, so we can ignore them.
         num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim) if s.stickied])
         results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied][:lim]
@@ -210,7 +237,11 @@ def create_body_embed(submission):
     if len(submission.title) > 250:
         abridged_title += '...'
     embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
-    embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
+
+    if user_exists(submission.author):
+        embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
+    else:
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
 
     if submission.is_self:
         abridged_text = (submission.selftext[:1020])
@@ -220,6 +251,31 @@ def create_body_embed(submission):
     else:
         embed.add_field(name='No text!', value='This post contains no text body.')
     return embed
+
+def create_comment_embed(submission):
+    url = submission.permalink
+    abridged_title = (submission.title[:250])
+    if len(submission.title) > 250:
+        abridged_title += '...'
+    embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
+    if user_exists(submission.author):
+        embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
+    else:
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
+
+    best_comments = list(submission.comments)
+
+
+    for i, v in enumerate(best_comments):
+        if i == 10:
+            break
+        embed.add_field(name=f'{v.author.name} - {v.score} points' , value=v.body[:100]+'...', inline = False)
+
+    if not best_comments:
+        embed.add_field(name='No comments!', value='This post contains no comments.', inline=False)
+
+    return embed
+
 
 def sub_exists(subreddit):
     """
@@ -293,6 +349,29 @@ def extract_command_info(command):
         lim = 5
     lim = int(lim)
     return (sort_by, lim)
+
+def extract_options(args):
+    """
+    extracts the options from args and returns them as a list
+
+    Parameters
+    ----------
+    args : list
+        The argument list.
+
+    Returns
+    -------
+    args : list
+        The args list without any options in it.
+    options : list
+        The options that the command was invoked with.
+
+    """
+    options = []
+    for s in args:
+        if s[0] == '-':
+            options.append(s[1:])
+    return [s for s in args if s[1:] not in options], options
 
 
 
