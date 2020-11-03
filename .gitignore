@@ -136,3 +136,5 @@ dmypy.json
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+# local idea config files
+.idea/*
