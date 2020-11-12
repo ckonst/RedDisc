@@ -198,7 +198,7 @@ def create_user_embed(redditor, url=''):
 
 def create_empty_user_embed(redditor, url=''):
     """Return an embed for a nonexistent redditor."""
-    return discord.Embed(title=f'User {redditor} does not exist, or has been deleted.', color=0x0051b7, description=url)
+    return discord.Embed(title='User does not exist, or has been deleted.', color=0x0051b7, description=url)
 
 def create_submission_embed(submission):
     """
