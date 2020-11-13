@@ -182,7 +182,7 @@ def create_user_embed(redditor, url=''):
         The embed object to return.
 
     """
-    embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0xff5700, description=url)
+    embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0x0051b7, description=url)
     embed.set_author(name=f'u/{redditor.name}', icon_url=redditor.icon_img)
     embed.set_thumbnail(url=redditor.icon_img)
     embed.add_field(name='User\'s Karma: ', value=redditor.comment_karma + redditor.link_karma)
@@ -198,7 +198,7 @@ def create_user_embed(redditor, url=''):
 
 def create_empty_user_embed(redditor, url=''):
     """Return an embed for a nonexistent redditor."""
-    return discord.Embed(title=f'User {redditor} does not exist, or has been deleted.', color=0xff5700, description=url)
+    return discord.Embed(title='User does not exist, or has been deleted.', color=0x0051b7, description=url)
 
 def create_submission_embed(submission):
     """
