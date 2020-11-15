@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.3]
+Modified !help command
+### Added
+- Custom !help command
+- create_help_embed function for the help command
+- Documentation for the above
+
+### Changed
+- !help command now displays command usage syntax
+
 ## [1.0.2]
 Updated user embeds
 ### Changed
