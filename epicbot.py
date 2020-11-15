@@ -14,6 +14,7 @@ nest_asyncio.apply()
 BOT_PREFIX = ('!')
 client = Bot(command_prefix=BOT_PREFIX)
 load_dotenv()
+client.remove_command('help')
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
@@ -138,7 +139,7 @@ async def post(ctx, *args):
                     tf = o
                 elif sub_exists(o):
                     sub = o
-        results = reddit.subreddit(sub).search(to_query_string(args), sort = sort_by, time_filter = tf, limit=lim)
+        results = reddit.subreddit(sub).search(to_query_string(args), sort=sort_by, time_filter=tf, limit=lim)
     else:
         if not sub_exists(sub):
             await ctx.send(f'Specified subreddit {sub} does not exist.')
@@ -163,6 +164,13 @@ async def user(ctx, *args):
         embed = create_user_embed(redditor)
     else:
         embed = create_empty_user_embed(redditor.name)
+    await ctx.send(embed=embed)
+
+@client.command(name='help',
+                brief='Help menu.')
+async def help(ctx):
+    """Custom help command"""
+    embed = create_help_embed()
     await ctx.send(embed=embed)
 
 def create_user_embed(redditor, url=''):
@@ -223,7 +231,7 @@ def create_submission_embed(submission):
     if user_exists(submission.author):
         embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
     else:
-        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
     new_url = url_morph(submission.url)
     if not submission.is_self and is_image(new_url):
         embed.set_image(url=new_url)
@@ -255,7 +263,7 @@ def create_body_embed(submission):
     if user_exists(submission.author):
         embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
     else:
-        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
 
     if submission.is_self:
         abridged_text = (submission.selftext[:body_lim])
@@ -289,7 +297,7 @@ def create_comment_embed(submission):
     if user_exists(submission.author):
         embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
     else:
-        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png%27')
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
 
     best_comments = list(submission.comments)
 
@@ -303,6 +311,32 @@ def create_comment_embed(submission):
 
     if not best_comments:
         embed.add_field(name='No comments!', value='This post contains no comments.', inline=False)
+
+    return embed
+
+def create_help_embed():
+    """
+    Return an embed object for the help function output.
+
+    Returns
+    -------
+    embed : discord.embeds.Embed
+        The embed object to return.
+
+    """
+    embed = discord.Embed(title='HELP MENU', color=0x8A9CFE, description='')
+    embed.set_thumbnail(url='https://i.imgur.com/tz7I0OI.jpg')
+
+    embed.add_field(name='Reaction Usage', value=f'\n{emojis[0]} : display post\'s summary\n\n\
+                    {emojis[1]} : display post\'s body\n\n\
+                        {emojis[2]} : display post\'s author profile\n\n\
+                            {emojis[3]} : dispay post\'s comments\n')
+    embed.add_field(name='Subreddit Commands', value='\![hot | top | new | rising][1-10] [subreddit]', inline=False)
+    ss = ' | '.join(search_sorts)
+    fs = ' | '.join(filters)
+    embed.add_field(name='Search Commands', value=f'!search[1-10] [search terms] -[{ss}] -[{fs}] -[subreddit]', inline=False)
+    embed.add_field(name='User Commands', value='!user [reddit username]', inline=False)
+    embed.add_field(name='Examples', value='!top5 pics\n!search5 Covid-19 -worldnews -top -alltime\n!user gallowboob', inline=False)
 
     return embed
 
