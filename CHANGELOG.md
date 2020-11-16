@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0]
+Added custom prefixes
+### Added
+- !prefix [new prefix] command to support per server custom prefixes
+    - every server's prefix is stored in prefix.json
+    - if no new prefix is specified it revert to the default: *!*
+- !help and !help prefix now display relevent prefix info
+
 ## [1.1.0]
 Added autofeed command, updated help command
 ### Added

@@ -39,6 +39,11 @@ Search for a user's profile.
 
 !user [reddit username]
 
+### Prefix Commands
+Change EpicBot's prefix If no prefix is provided then it will reset to the default. Default is !
+
+[current prefix]prefix [new prefix or nothing to reset to !]
+
 ### Examples
 
 !auto memes dankmemes MemeEconomy
@@ -48,3 +53,5 @@ Search for a user's profile.
 !search5 Covid-19 -worldnews -top -alltime
 
 !user gallowboob
+
+!prefix ~

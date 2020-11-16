@@ -1,11 +1,11 @@
 import discord
-from discord.ext import tasks
-from discord.ext.commands import Bot
+from discord.ext import tasks, commands
 import praw
 from dotenv import load_dotenv
 import os
 from prawcore import NotFound
 import asyncio
+import json
 
 # comment out these two lines if you are not using spyder
 import nest_asyncio
@@ -13,10 +13,24 @@ nest_asyncio.apply()
 
 #%% STARTUP
 
-"""TODO: use_snake_case_you_inbreds"""
-#TODO: make function to let users customize prefix
-BOT_PREFIX = ('!')
-client = Bot(command_prefix=BOT_PREFIX)
+with open(prefix_file := 'prefixes.json') as f:
+    guild_prefixes = json.load(f)
+default_prefix = '!'
+
+async def get_prefix(bot, msg):
+    """Return this guild's prefix."""
+    guild = msg.guild
+    if guild:
+        id = str(guild.id)
+        if id not in guild_prefixes:
+            guild_prefixes[id] = default_prefix
+            with open(prefix_file, 'w') as f:
+                json.dump(guild_prefixes, f)
+        return commands.when_mentioned_or(guild_prefixes[id])(bot, msg)
+    else:
+        return commands.when_mentioned_or(default_prefix)(bot, msg)
+
+client = commands.Bot(command_prefix=get_prefix)
 load_dotenv()
 client.remove_command('help')
 
@@ -97,12 +111,22 @@ async def on_raw_reaction_add(payload):
 
 #%% COMMANDS
 
+@client.command()
+@commands.guild_only()
+async def prefix(ctx, *args):
+    """Set the prefix to use for this guild."""
+    id = str(ctx.guild.id)
+    guild_prefixes[id] = default_prefix if not args else args[0]
+    with open(prefix_file, 'w') as f:
+        json.dump(guild_prefixes, f)
+    await ctx.send(f'Command prefix set to: *{guild_prefixes[id]}*')
+
 @client.command(name='post',
                 brief='Posts given number of posts from a subreddit.',
                 aliases = aliases)
 async def post(ctx, *args):
     """
-    Returns a given number of posts, up to 10, sorted by the alias that this was invoked with.
+    Return a given number of posts, up to 10, sorted by the alias that this was invoked with.
 
     Parameters
     ----------
@@ -386,6 +410,7 @@ def create_help_embed(*args):
     post_ex = ''
     search_ex = ''
     user_ex = ''
+    prefix_ex = ''
 
     embed = discord.Embed(title='HELP MENU', color=0x8A9CFE, description='')
     embed.set_thumbnail(url='https://i.imgur.com/tz7I0OI.jpg')
@@ -417,14 +442,20 @@ def create_help_embed(*args):
                         Arguments with the \'-\' prefix are optional.\
                         Defaults to r/all.\n\n\
                         !search[1-10] [search terms] -[{ss}] -[{fs}] -[subreddit]', inline=False)
-        search_ex = '!search5 Covid-19 -worldnews -top -alltime\n'
+        search_ex = '!search5 Covid-19 -worldnews -top -all\n'
     if any(arg in args for arg in ['user']) or not args:
         embed.add_field(name='User Commands', value='Search for a user\'s profile.\n\n\
                         !user [reddit username]', inline=False)
         user_ex = '!user gallowboob\n'
 
+    if any(arg in args for arg in ['prefix']) or not args:
+        embed.add_field(name='Prefix Commands', value='Change EpicBot\'s prefix\
+                        If no prefix is provided then it will reset to the default.\
+                        Default is !\n\n\
+                        [current prefix]prefix [new prefix or nothing to reset to !]')
+        prefix_ex = '!prefix ~'
     if not (args and args[0] == 'reactions'):
-        embed.add_field(name='Examples', value=f'{auto_ex}\n{post_ex}\n{search_ex}\n{user_ex}', inline=False)
+        embed.add_field(name='Examples', value=f'{auto_ex}\n{post_ex}\n{search_ex}\n{user_ex}\n{prefix_ex}', inline=False)
 
     return embed
 

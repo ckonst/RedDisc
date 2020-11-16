@@ -139,3 +139,6 @@ dmypy.json
 
 #.idea since it's redundant with the .gitignore
 .idea/
+
+# this file should probably not be in a public repository. 
+prefixes.json
