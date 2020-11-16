@@ -1,13 +1,17 @@
 import discord
+from discord.ext import tasks
 from discord.ext.commands import Bot
 import praw
 from dotenv import load_dotenv
 import os
 from prawcore import NotFound
+import asyncio
 
 # comment out these two lines if you are not using spyder
 import nest_asyncio
 nest_asyncio.apply()
+
+#%% STARTUP
 
 """TODO: use_snake_case_you_inbreds"""
 #TODO: make function to let users customize prefix
@@ -27,6 +31,7 @@ filters = ['all', 'hour', 'day', 'week', 'month', 'year']
 base_url = 'https://www.reddit.com'
 title_lim = 250
 body_lim = 1020
+autofeed = None
 
 def is_me(_id):
     """Return whether the given id is the bot's id."""
@@ -35,6 +40,9 @@ def is_me(_id):
 reddit = praw.Reddit(client_id=ID,
                             client_secret=SECRET,
                             user_agent="EpicBot for Reddit")
+
+#%% EVENTS
+
 @client.event
 async def on_ready():
     """Print messages to indicate a successful login."""
@@ -87,8 +95,8 @@ async def on_raw_reaction_add(payload):
 
         await message.edit(embed=new_embed)
 
-#TODO: seperate into functions for readability.
-#      if invoked with 'post' then search frontpage.
+#%% COMMANDS
+
 @client.command(name='post',
                 brief='Posts given number of posts from a subreddit.',
                 aliases = aliases)
@@ -112,14 +120,11 @@ async def post(ctx, *args):
 
     # check for invocation errors
     command = ctx.invoked_with
-
-    #TODO: use a default subreddit instead of sending this message.
-    #TODO: check for invoked with post
     if not args:
-        await ctx.send(f'Please specify subreddit! Correct usage is: !{command} [subreddit]')
+        await ctx.send(f'Please specify subreddit. Usage: !{command} [subreddit]')
         return
-    sub = args[0]
 
+    sub = args[0]
     # extract options from args
     args, options = extract_options(args)
 
@@ -168,10 +173,54 @@ async def user(ctx, *args):
 
 @client.command(name='help',
                 brief='Help menu.')
-async def help(ctx):
-    """Custom help command"""
-    embed = create_help_embed()
+async def help(ctx, *args):
+    """Custom help command. args contains specific commands."""
+    embed = create_help_embed(*args)
     await ctx.send(embed=embed)
+
+@client.command(name='auto',
+                brief='toggles auto feed of a subreddit or multisubreddit to this channel.',
+                aliases=['feed', 'autofeed'])
+async def auto(ctx, *args):
+    """Toggle autofeed command. Requires subreddit input."""
+    global autofeed
+    if autofeed:
+        autofeed.cancel()
+        autofeed = None
+        await ctx.send('autofeed toggled to **[OFF]**')
+        return
+
+    if not args:
+        await ctx.send('Please specify subreddit. Usage: !auto [subreddit]')
+        return
+
+    sub = [s for s in args if sub_exists(s)]
+    if not sub:
+        await ctx.send(f'Subreddit(s): {args} do not exist.')
+        return
+
+    plural = ''
+    if len(sub) > 1:
+        sub = '+'.join(sub)
+        plural = 's'
+    else:
+        sub = sub[0]
+    autofeed = feed.start(ctx, reddit.subreddit(sub))
+    await ctx.send(f'autofeed toggled to **[ON]** for subreddit{plural}: *{sub}*')
+
+@tasks.loop()
+async def feed(ctx, subreddit):
+    """Task for autofeed command. While autofeed is on, this will keep checking for new posts."""
+    for submission in subreddit.stream.submissions(pause_after=0, skip_existing=True):
+        if submission is None:
+            await asyncio.sleep(10) # sleep for 10 seconds, let other tasks run
+            continue
+        embed = create_submission_embed(submission)
+        message = await ctx.send(embed=embed)
+        for emoji in emojis:
+            await message.add_reaction(emoji)
+
+#%% EMBED CREATION
 
 def create_user_embed(redditor, url=''):
     """
@@ -314,7 +363,7 @@ def create_comment_embed(submission):
 
     return embed
 
-def create_help_embed():
+def create_help_embed(*args):
     """
     Return an embed object for the help function output.
 
@@ -324,21 +373,62 @@ def create_help_embed():
         The embed object to return.
 
     """
+
+    # check for post command.
+    post = [s for s in sort if s != 'search']
+    post.append('post')
+
+    # autofeed aliases
+    autos = ' | '.join(['auto', 'feed', 'autofeed'])
+
+    # example strings
+    auto_ex = ''
+    post_ex = ''
+    search_ex = ''
+    user_ex = ''
+
     embed = discord.Embed(title='HELP MENU', color=0x8A9CFE, description='')
     embed.set_thumbnail(url='https://i.imgur.com/tz7I0OI.jpg')
 
-    embed.add_field(name='Reaction Usage', value=f'\n{emojis[0]} : display post\'s summary\n\n\
-                    {emojis[1]} : display post\'s body\n\n\
+    if any(arg in args for arg in ['reactions']) or not args:
+        embed.add_field(name='Reaction Usage', value=f'\
+                        Click on one of these underneath a post to react to it.\n\n\
+                        {emojis[0]} : display post\'s summary (default)\n\n\
+                        {emojis[1]} : display post\'s body\n\n\
                         {emojis[2]} : display post\'s author profile\n\n\
-                            {emojis[3]} : dispay post\'s comments\n')
-    embed.add_field(name='Subreddit Commands', value='\![hot | top | new | rising][1-10] [subreddit]', inline=False)
-    ss = ' | '.join(search_sorts)
-    fs = ' | '.join(filters)
-    embed.add_field(name='Search Commands', value=f'!search[1-10] [search terms] -[{ss}] -[{fs}] -[subreddit]', inline=False)
-    embed.add_field(name='User Commands', value='!user [reddit username]', inline=False)
-    embed.add_field(name='Examples', value='!top5 pics\n!search5 Covid-19 -worldnews -top -alltime\n!user gallowboob', inline=False)
+                        {emojis[3]} : dispay post\'s comments\n', inline=False)
+
+    if any(arg in args for arg in ['auto', 'feed', 'autofeed']) or not args:
+        embed.add_field(name='Autofeed Commands', value=f'Requires at least 1 subreddit.\
+                        Automatically post new submissions as they are posted to reddit.\n\n\
+                        ![{autos}] [subreddit 1] [subreddit 2] [subreddit ...]', inline=False)
+        auto_ex = '!auto memes dankmemes MemeEconomy\n'
+
+    if any(arg in args for arg in post) or not args:
+        embed.add_field(name='Subreddit Commands', value='Requires a number. \
+                        Post up to 10 posts based on your sort preference.\n\n\
+                        ![hot | top | new | rising][1-10] [subreddit]', inline=False)
+        post_ex = '!top5 pics\n'
+    if any(arg in args for arg in ['search']) or not args:
+        ss = ' | '.join(search_sorts)
+        fs = ' | '.join(filters)
+        embed.add_field(name='Search Commands', value=f'Requires a number and search terms.\
+                        Post up to 10 posts filtered by your search terms.\
+                        Arguments with the \'-\' prefix are optional.\
+                        Defaults to r/all.\n\n\
+                        !search[1-10] [search terms] -[{ss}] -[{fs}] -[subreddit]', inline=False)
+        search_ex = '!search5 Covid-19 -worldnews -top -alltime\n'
+    if any(arg in args for arg in ['user']) or not args:
+        embed.add_field(name='User Commands', value='Search for a user\'s profile.\n\n\
+                        !user [reddit username]', inline=False)
+        user_ex = '!user gallowboob\n'
+
+    if not (args and args[0] == 'reactions'):
+        embed.add_field(name='Examples', value=f'{auto_ex}\n{post_ex}\n{search_ex}\n{user_ex}', inline=False)
 
     return embed
+
+#%% OTHER HELPERS
 
 def sub_exists(subreddit):
     """
@@ -449,6 +539,8 @@ def extract_options(args):
         if s[0] == '-':
             options.append(s[1:])
     return [s for s in args if s[1:] not in options], options
+
+#%% MAIN
 
 if __name__ == '__main__':
 	try:

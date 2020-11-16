@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0]
+Added autofeed command, updated help command
+### Added
+- !auto [subreddit] command:
+    - When toggled on, the bot will post new submissions from a given subreddit in real time
+    - Call a second time to toggle off (no other arguments needed)
+    - Will post the feed to the channel this was invoked in
+
+### Changed
+- autofeed now appears in the help menu
+- !help [command] to post helpful information about a single command
+- updated readme
+
 ## [1.0.3]
 Modified !help command
 ### Added
