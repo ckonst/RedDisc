@@ -136,3 +136,9 @@ dmypy.json
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+#.idea since it's redundant with the .gitignore
+.idea/
+
+# this file should probably not be in a public repository. 
+prefixes.json
