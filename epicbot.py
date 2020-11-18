@@ -24,7 +24,7 @@ async def get_prefix(bot, msg):
         id = str(guild.id)
         if id not in guild_prefixes:
             guild_prefixes[id] = default_prefix
-            with open(prefix_file, 'w') as f:
+            with open(prefix_file, 'w+') as f:
                 json.dump(guild_prefixes, f)
         return commands.when_mentioned_or(guild_prefixes[id])(bot, msg)
     else:
@@ -117,7 +117,7 @@ async def prefix(ctx, *args):
     """Set the prefix to use for this guild."""
     id = str(ctx.guild.id)
     guild_prefixes[id] = default_prefix if not args else args[0]
-    with open(prefix_file, 'w') as f:
+    with open(prefix_file, 'w+') as f:
         json.dump(guild_prefixes, f)
     await ctx.send(f'Command prefix set to: *{guild_prefixes[id]}*')
 
