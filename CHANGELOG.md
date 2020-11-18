@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2]
+- Fixed comment embeds to only include "..." when length of the comment is greater than 100 chars
+
 ## [1.2.1]
 - Now creates prefixes.json if it doesn't exist
 
