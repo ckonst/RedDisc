@@ -8,8 +8,8 @@ import asyncio
 import json
 
 # comment out these two lines if you are not using spyder
-import nest_asyncio
-nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 
 #%% STARTUP
 
@@ -45,6 +45,7 @@ filters = ['all', 'hour', 'day', 'week', 'month', 'year']
 base_url = 'https://www.reddit.com'
 title_lim = 250
 body_lim = 1020
+comment_lim = 100
 autofeed = None
 
 def is_me(_id):
@@ -71,16 +72,13 @@ async def on_raw_reaction_add(payload):
     Event handler for reactions.
     We check reactions in the emojis list to decide what to set the embed to.
     Then edit the embed in the original message which received a reaction.
-
     Parameters
     ----------
     payload : discord.RawReactionActionEvent
         Represents the payload for a on_raw_reaction_add() or on_raw_reaction_remove() event.
-
     Returns
     -------
     None.
-
     """
     if not is_me(payload.user_id):
         m_id = payload.message_id
@@ -127,7 +125,6 @@ async def prefix(ctx, *args):
 async def post(ctx, *args):
     """
     Return a given number of posts, up to 10, sorted by the alias that this was invoked with.
-
     Parameters
     ----------
     ctx : discord.ext.commands.Context
@@ -135,11 +132,9 @@ async def post(ctx, *args):
     *args : list
         The arguments that the user passed through.
         If the user does not specify a subreddit, or the given subreddit does not exist, send an error message.
-
     Returns
     -------
     None.
-
     """
 
     # check for invocation errors
@@ -189,7 +184,7 @@ async def post(ctx, *args):
 async def user(ctx, *args):
     """Get a Reddit user's profile and send the embedded info to discord."""
     redditor = reddit.redditor(args[0])
-    if user_exists(redditor.name):
+    if user_exists(redditor):
         embed = create_user_embed(redditor)
     else:
         embed = create_empty_user_embed(redditor.name)
@@ -249,19 +244,16 @@ async def feed(ctx, subreddit):
 def create_user_embed(redditor, url=''):
     """
     Return an embed containing the user profile information of redditor.
-
     Parameters
     ----------
     redditor : praw.models.Redditor
         The user to create the embed for.
     url : string, optional
         The url to the original post (if applicable). The default is ''.
-
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
-
     """
     embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0x0051b7, description=url)
     embed.set_author(name=f'u/{redditor.name}', icon_url=redditor.icon_img)
@@ -284,17 +276,14 @@ def create_empty_user_embed(redditor, url=''):
 def create_submission_embed(submission):
     """
     Return an embed object for a submission.
-
     Parameters
     ----------
     submission : praw.models.Submission
         A reddit submission.
-
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
-
     """
     url = submission.permalink
     abridged_title = (submission.title[:title_lim])
@@ -306,6 +295,9 @@ def create_submission_embed(submission):
     else:
         embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
     new_url = url_morph(submission.url)
+    #print (submission.is_self)
+    #print (is_image(new_url))
+    #print (new_url)
     if not submission.is_self and is_image(new_url):
         embed.set_image(url=new_url)
     embed.add_field(name='Upvotes:', value=submission.score)
@@ -315,17 +307,14 @@ def create_submission_embed(submission):
 def create_body_embed(submission):
     """
     Return an embed object for the text body (if applicable) of a submission.
-
     Parameters
     ----------
     submission : praw.models.Submission
         A reddit submission.
-
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
-
     """
     url = submission.permalink
     abridged_title = (submission.title[:title_lim])
@@ -350,17 +339,14 @@ def create_body_embed(submission):
 def create_comment_embed(submission):
     """
     Return an embed object for the comments of a submission.
-
     Parameters
     ----------
     submission : praw.models.Submission
         A reddit submission.
-
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
-
     """
     url = submission.permalink
     abridged_title = (submission.title[:title_lim])
@@ -377,10 +363,13 @@ def create_comment_embed(submission):
     for i, v in enumerate(best_comments):
         if i == 10:
             break
+        abridged_comment = (v.body[:comment_lim])
+        if len(v.body) > comment_lim:
+            abridged_comment += '...'
         if user_exists(v.author):
-            embed.add_field(name=f'{v.author.name} - {v.score} points' , value=v.body[:100]+'...', inline = False)
+            embed.add_field(name=f'{v.author.name} - {v.score} points' , value=abridged_comment, inline = False)
         else:
-            embed.add_field(name=f'u/deleted - {v.score} points' , value=v.body[:100]+'...', inline = False)
+            embed.add_field(name=f'u/deleted - {v.score} points' , value=abridged_comment, inline = False)
 
     if not best_comments:
         embed.add_field(name='No comments!', value='This post contains no comments.', inline=False)
@@ -390,12 +379,10 @@ def create_comment_embed(submission):
 def create_help_embed(*args):
     """
     Return an embed object for the help function output.
-
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
-
     """
 
     # check for post command.
@@ -464,17 +451,14 @@ def create_help_embed(*args):
 def sub_exists(subreddit):
     """
     Return whether a given subreddit exists.
-
     Parameters
     ----------
     subreddit : praw.models.Subreddit
         The subreddit object to check.
-
     Returns
     -------
     bool
         Whether or not the subreddit exists.
-
     """
     exists = True
     try:
@@ -506,17 +490,14 @@ def is_image(url):
 def url_morph(url):
     """
     Return a an image url with the extension edited for the embed.
-
     Parameters
     ----------
     url : string
         The url to morph.
-
     Returns
     -------
     url : string
         the url with a proper extension for embedding into disord.
-
     """
     if 'gifv' in url:
         url = url[:-1]
@@ -527,19 +508,16 @@ def url_morph(url):
 def extract_command_info(command):
     """
     Return the invocation alias (sort_by) and limit given by the command.
-
     Parameters
     ----------
     command : string
         The invoked command.
-
     Returns
     -------
     sort_by : string
         The subreddit sorting method.
     lim : string
         How many submissions to post.
-
     """
     sort_by = ''.join([s for s in sort if s in command]).lower()
     lim = command.replace(sort_by, '')
@@ -551,19 +529,16 @@ def extract_command_info(command):
 def extract_options(args):
     """
     extracts the options from args and returns them as a list
-
     Parameters
     ----------
     args : list
         The argument list.
-
     Returns
     -------
     args : list
         The args list without any options in it.
     options : list
         The options that the command was invoked with.
-
     """
     options = []
     for s in args:
@@ -581,4 +556,4 @@ if __name__ == '__main__':
 		exit(0)
 	except:
 		pass
-
+  
