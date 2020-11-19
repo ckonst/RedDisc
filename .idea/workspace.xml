@@ -26,7 +26,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5ece4717-d11d-4ccc-ae2e-354354be2c1f" name="Default Changelist" comment="Fixed comment embeds to only include &quot;...&quot; when length of the comment is greater than 100 chars">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/epicbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/epicbot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +139,7 @@
       <workItem from="1605544847860" duration="1892000" />
       <workItem from="1605554333146" duration="2950000" />
       <workItem from="1605576565591" duration="783000" />
-      <workItem from="1605719734550" duration="9136000" />
+      <workItem from="1605719734550" duration="17015000" />
     </task>
     <task id="LOCAL-00002" summary="Added embeds and all post categorizations for subreddits.  Added character limit for titles">
       <created>1599964149321</created>
@@ -252,7 +253,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605736399309</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Fixed comment embeds to only include &quot;...&quot; when length of the comment is greater than 100 chars">
+      <created>1605736580211</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1605736580211</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -306,29 +314,29 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599965360333" />
-    <state width="1586" height="228" key="GridCell.Tab.0.bottom" timestamp="1605736183954">
+    <state width="1586" height="228" key="GridCell.Tab.0.bottom" timestamp="1605754818334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1586" height="229" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1605117950952" />
-    <state width="1586" height="228" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736183954" />
+    <state width="1586" height="228" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605754818334" />
     <state width="1137" height="260" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1586" height="228" key="GridCell.Tab.0.center" timestamp="1605736183954">
+    <state width="1586" height="228" key="GridCell.Tab.0.center" timestamp="1605754818334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1586" height="229" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1605117950952" />
-    <state width="1586" height="228" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736183954" />
+    <state width="1586" height="228" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605754818334" />
     <state width="1137" height="260" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1586" height="228" key="GridCell.Tab.0.left" timestamp="1605736183954">
+    <state width="1586" height="228" key="GridCell.Tab.0.left" timestamp="1605754818334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1586" height="229" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1605117950952" />
-    <state width="1586" height="228" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736183954" />
+    <state width="1586" height="228" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605754818334" />
     <state width="1137" height="260" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
-    <state width="1586" height="228" key="GridCell.Tab.0.right" timestamp="1605736183954">
+    <state width="1586" height="228" key="GridCell.Tab.0.right" timestamp="1605754818334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1586" height="229" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1605117950952" />
-    <state width="1586" height="228" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736183954" />
+    <state width="1586" height="228" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605754818334" />
     <state width="1137" height="260" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1603414853752" />
     <state width="914" height="347" key="GridCell.Tab.1.bottom" timestamp="1600888002265">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -362,11 +370,11 @@
     <state x="-1459" y="165" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1599964747671" />
     <state x="461" y="165" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1599965406023" />
     <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1600547061398" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1605736434851">
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1605736587742">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1368" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1604423602207" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736434851" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1605736587742" />
     <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1600636304604" />
     <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1599964376488">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -388,6 +396,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/epicbot$main.coverage" NAME="main Coverage Results" MODIFIED="1599955838806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/epicbot$epicbot.coverage" NAME="epicbot Coverage Results" MODIFIED="1605736183948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/epicbot$epicbot.coverage" NAME="epicbot Coverage Results" MODIFIED="1605754818329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -42,6 +42,7 @@ aliases = [f'{s}{j}' for j in range(1, 11) for s in sort]
 emojis = ['📃','📄', '👤', '💬' ]
 search_sorts = ['relevance', 'top', 'new', 'comments']
 filters = ['all', 'hour', 'day', 'week', 'month', 'year']
+extensions = ['gif', 'jpg', 'png']
 base_url = 'https://www.reddit.com'
 title_lim = 250
 body_lim = 1020
@@ -168,6 +169,7 @@ async def post(ctx, *args):
         if not sub_exists(sub):
             await ctx.send(f'Specified subreddit {sub} does not exist.')
             return
+
         # get the number of stickied posts, so we can ignore them.
         num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=10) if s.stickied])
         results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied]
@@ -484,7 +486,6 @@ def to_query_string(args):
 
 def is_image(url):
     """Return whether or not the given url links to an image."""
-    extensions = ['gif', 'jpg', 'png']
     return any(e in url for e in extensions)
 
 def url_morph(url):
@@ -501,7 +502,7 @@ def url_morph(url):
     """
     if 'gifv' in url:
         url = url[:-1]
-    if 'imgur'in url and 'jpg' not in url:
+    if 'imgur'in url and 'jpg' not in url and 'gif' not in url and 'png' not in url:
         url += '.jpg'
     return url
 
