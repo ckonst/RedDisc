@@ -169,7 +169,6 @@ async def post(ctx, *args):
         if not sub_exists(sub):
             await ctx.send(f'Specified subreddit {sub} does not exist.')
             return
-
         # get the number of stickied posts, so we can ignore them.
         num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=10) if s.stickied])
         results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied]
