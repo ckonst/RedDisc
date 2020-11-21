@@ -3,6 +3,7 @@ from discord.ext import tasks, commands
 import praw
 from dotenv import load_dotenv
 import os
+from praw.exceptions import InvalidURL
 from prawcore import NotFound
 import asyncio
 import json
@@ -120,10 +121,28 @@ async def prefix(ctx, *args):
         json.dump(guild_prefixes, f)
     await ctx.send(f'Command prefix set to: *{guild_prefixes[id]}*')
 
+
 @client.command(name='post',
+                brief='Posts given number of posts from a subreddit.')
+async def post(ctx, *args):
+    if len(args)>0:
+        try:
+            submission = reddit.submission(url=args[0])
+            embed = create_submission_embed(submission)
+            message = await ctx.send(embed=embed)
+            for emoji in emojis:
+                await message.add_reaction(emoji)
+        except InvalidURL:
+            await ctx.send('Enter a valid reddit post URL.')
+        except NotFound:
+            await ctx.send('Enter a valid reddit post URL.')
+    else:
+        await ctx.send('Please specify post URL.  Usage: !post [URL]')
+
+@client.command(name='posts',
                 brief='Posts given number of posts from a subreddit.',
                 aliases = aliases)
-async def post(ctx, *args):
+async def posts(ctx, *args):
     """
     Return a given number of posts, up to 10, sorted by the alias that this was invoked with.
     Parameters
@@ -140,6 +159,9 @@ async def post(ctx, *args):
 
     # check for invocation errors
     command = ctx.invoked_with
+
+    if command == 'posts':
+        return
     if not args:
         await ctx.send(f'Please specify subreddit. Usage: !{command} [subreddit]')
         return
@@ -165,6 +187,7 @@ async def post(ctx, *args):
                 elif sub_exists(o):
                     sub = o
         results = reddit.subreddit(sub).search(to_query_string(args), sort=sort_by, time_filter=tf, limit=lim)
+
     else:
         if not sub_exists(sub):
             await ctx.send(f'Specified subreddit {sub} does not exist.')
@@ -388,8 +411,8 @@ def create_help_embed(*args):
     """
 
     # check for post command.
-    post = [s for s in sort if s != 'search']
-    post.append('post')
+    posts = [s for s in sort if s != 'search']
+    posts.append('posts')
 
     # autofeed aliases
     autos = ' | '.join(['auto', 'feed', 'autofeed'])
@@ -397,6 +420,7 @@ def create_help_embed(*args):
     # example strings
     auto_ex = ''
     post_ex = ''
+    posts_ex = ''
     search_ex = ''
     user_ex = ''
     prefix_ex = ''
@@ -404,7 +428,7 @@ def create_help_embed(*args):
     embed = discord.Embed(title='HELP MENU', color=0x8A9CFE, description='')
     embed.set_thumbnail(url='https://i.imgur.com/tz7I0OI.jpg')
 
-    if any(arg in args for arg in ['reactions']) or not args:
+    if any(arg in args for arg in ['reactions', 'reaction']) or not args:
         embed.add_field(name='Reaction Usage', value=f'\
                         Click on one of these underneath a post to react to it.\n\n\
                         {emojis[0]} : display post\'s summary (default)\n\n\
@@ -418,11 +442,16 @@ def create_help_embed(*args):
                         ![{autos}] [subreddit 1] [subreddit 2] [subreddit ...]', inline=False)
         auto_ex = '!auto memes dankmemes MemeEconomy\n'
 
-    if any(arg in args for arg in post) or not args:
+    if any(arg in args for arg in posts) or not args:
         embed.add_field(name='Subreddit Commands', value='Requires a number. \
                         Post up to 10 posts based on your sort preference.\n\n\
                         ![hot | top | new | rising][1-10] [subreddit]', inline=False)
-        post_ex = '!top5 pics\n'
+        posts_ex = '!top5 pics\n'
+    if any(arg in args for arg in ['post']) or not args:
+        embed.add_field(name='Post Command', value='Requires a full post URL. \
+                                Find a single post using the full URL of the post.\n\n\
+                                !post [URL]', inline=False)
+        post_ex = '!post https://www.reddit.com/...\n'
     if any(arg in args for arg in ['search']) or not args:
         ss = ' | '.join(search_sorts)
         fs = ' | '.join(filters)
@@ -444,7 +473,7 @@ def create_help_embed(*args):
                         [current prefix]prefix [new prefix or nothing to reset to !]')
         prefix_ex = '!prefix ~'
     if not (args and args[0] == 'reactions'):
-        embed.add_field(name='Examples', value=f'{auto_ex}\n{post_ex}\n{search_ex}\n{user_ex}\n{prefix_ex}', inline=False)
+        embed.add_field(name='Examples', value=f'{auto_ex}\n{posts_ex}\n{post_ex}\n{search_ex}\n{user_ex}\n{prefix_ex}', inline=False)
 
     return embed
 
