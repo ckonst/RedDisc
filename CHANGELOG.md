@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.3]
+A few bugfixes, test script
+###
+
+### Added
+- Automated test script with test.py and tests.txt
+- !help command now shows example usage for specific commands
+### Changed
+- autofeed now sleeps for 1 millisecond instead of 10 seconds, to speed up response times
+### Fixed
+- url_morph now checks for multiple image extensions with imgur url
+- No longer removes reactions that are not used for changing the displayed information
+
+
 ## [1.2.2]
 - Fixed comment embeds to only include "..." when length of the comment is greater than 100 chars
 

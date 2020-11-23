@@ -1,0 +1,81 @@
+hot
+1 music
+2 discord
+3 memes
+4 askreddit
+5 programming
+6 RocketLeague
+7 FL_Studio
+8 WeAreTheMusicMakers
+9 cringe
+10 dataisbeautiful
+
+top
+1 ThisIsOurMusic
+2 Piracy
+3 music
+4 woahdude
+5 audio
+6 BikiniBottomTwitter
+7 dankmemes
+8 thalassophobia
+9 pics
+10 overwatch
+
+new
+1 askreddit
+2 programming
+3 RocketLeague
+4 all
+5 cringe
+6 youtubehaiku
+7 thisisnotarealsubreddit12345
+8 leagueoflegends
+9 creepy
+10 gifs
+
+rising
+1 askreddit
+2 programming
+3 all
+4 RocketLeague
+5 cringe
+6 abcdefhijklmnopqrstuvwxyz
+7 futurology
+8 twoxchromosomes
+9 nosleep
+10 gorillaz
+
+search
+1 bruh -all -week
+2 stupid
+3 covid-19 -comments -worldnews -month
+4 big -all -day
+5 python
+6 I ate -food
+7 grilled cheese
+8 cats -new -week
+9 sad
+10 dogs -pics -top -all
+
+user
+gallowboob
+holofan4life
+oqwetrirgwogijlllllll11
+
+auto
+all
+memes dankmemes BikiniBottomTwitter
+
+prefix
+(that was epic)
+::
+^
+$
+
+help
+post
+prefix
+search
+hot search reactions
+prefix reactions auto
