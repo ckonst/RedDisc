@@ -82,7 +82,8 @@ async def on_raw_reaction_add(payload):
     -------
     None.
     """
-    if not is_me(payload.user_id):
+    emoji = payload.emoji.name
+    if not is_me(payload.user_id) and emoji in emojis:
         m_id = payload.message_id
         message = await client.get_channel(payload.channel_id).fetch_message(m_id)
         embed = message.embeds[0]
@@ -257,7 +258,7 @@ async def feed(ctx, subreddit):
     """Task for autofeed command. While autofeed is on, this will keep checking for new posts."""
     for submission in subreddit.stream.submissions(pause_after=0, skip_existing=True):
         if submission is None:
-            await asyncio.sleep(10) # sleep for 10 seconds, let other tasks run
+            await asyncio.sleep(.001) # sleep for 1 millisecond, let other tasks run
             continue
         embed = create_submission_embed(submission)
         message = await ctx.send(embed=embed)
@@ -472,8 +473,10 @@ def create_help_embed(*args):
                         Default is !\n\n\
                         [current prefix]prefix [new prefix or nothing to reset to !]')
         prefix_ex = '!prefix ~'
-    if not (args and args[0] == 'reactions'):
-        embed.add_field(name='Examples', value=f'{auto_ex}\n{posts_ex}\n{post_ex}\n{search_ex}\n{user_ex}\n{prefix_ex}', inline=False)
+    if not (len(args) == 1 and 'reactions' in args):
+        embed.add_field(name='Examples', value=f'{auto_ex}\n{posts_ex}\n{post_ex}\n\
+                           {search_ex}\n{user_ex}\n\
+                           {prefix_ex}\n\n!help [command 1] [command 2] [command ...]', inline=False)
 
     return embed
 
@@ -531,7 +534,7 @@ def url_morph(url):
     """
     if 'gifv' in url:
         url = url[:-1]
-    if 'imgur'in url and 'jpg' not in url and 'gif' not in url and 'png' not in url:
+    if 'imgur' in url and not any(e in url for e in extensions):
         url += '.jpg'
     return url
 
