@@ -1,24 +1,38 @@
+# -*- coding: utf-8 -*-
+# ------------------------------------------------------------------------------
+# 
+# Created by Christian Konstantinov and Paul Armati
+# Version 1.2.4
+# Python 3.8.5
+#
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+
 import discord
-from discord.ext import tasks, commands
-import praw
-from dotenv import load_dotenv
-import os
-from praw.exceptions import InvalidURL
-from prawcore import NotFound
-import asyncio
 import json
+import os
+import praw
 
-# comment out these two lines if you are not using spyder
-#import nest_asyncio
-#nest_asyncio.apply()
+from discord.ext import tasks, commands
 
-#%% STARTUP
+from dotenv import load_dotenv
 
-with open(prefix_file := 'prefixes.json') as f:
-    guild_prefixes = json.load(f)
-default_prefix = '!'
+from prawcore import NotFound
+from praw.exceptions import InvalidURL
 
-async def get_prefix(bot, msg):
+from typing import Any, List, Tuple
+
+# comment out these two lines if you are not using Spyder
+# hint: don't use Spyder
+# import nest_asyncio
+# nest_asyncio.apply()
+
+# ------------------------------------------------------------------------------
+# Startup
+# ------------------------------------------------------------------------------
+
+async def get_prefix(bot, msg) -> str:
     """Return this guild's prefix."""
     guild = msg.guild
     if guild:
@@ -31,6 +45,10 @@ async def get_prefix(bot, msg):
     else:
         return commands.when_mentioned_or(default_prefix)(bot, msg)
 
+with open(prefix_file := 'prefixes.json') as f:
+    guild_prefixes = json.load(f)
+default_prefix = '!'
+
 client = commands.Bot(command_prefix=get_prefix)
 load_dotenv()
 client.remove_command('help')
@@ -38,52 +56,45 @@ client.remove_command('help')
 TOKEN = os.getenv('DISCORD_TOKEN')
 SECRET = os.getenv('CLIENT_SECRET')
 ID = os.getenv('CLIENT_ID')
-sort = ['hot', 'top', 'new', 'rising', 'search']
-aliases = [f'{s}{j}' for j in range(1, 11) for s in sort]
-emojis = ['📃','📄', '👤', '💬' ]
-search_sorts = ['relevance', 'top', 'new', 'comments']
-filters = ['all', 'hour', 'day', 'week', 'month', 'year']
-extensions = ['gif', 'jpg', 'png']
-base_url = 'https://www.reddit.com'
-title_lim = 250
-body_lim = 1020
-comment_lim = 100
+SORT = ('hot', 'top', 'new', 'rising', 'search')
+# don't use a tuple comprehension, it won't work, yes I tried. 
+ALIASES = tuple([f'{s}{j}' for j in range(1, 11) for s in SORT])
+EMOJIS = ('📃','📄', '👤', '💬')
+SEARCH_SORTS = ('relevance', 'top', 'new', 'comments')
+FILTERS = ('all', 'hour', 'day', 'week', 'month', 'year')
+EXTENSIONS = ('gif', 'jpg', 'png')
+BASE_URL = 'https://www.reddit.com'
+TITLE_LIM = 250
+BODY_LIM = 1020
+COMMENT_LIM = 100
 autofeed = None
-
-def is_me(_id):
-    """Return whether the given id is the bot's id."""
-    return _id == client.user.id
 
 reddit = praw.Reddit(client_id=ID,
                             client_secret=SECRET,
                             user_agent="EpicBot for Reddit")
 
-#%% EVENTS
+# ------------------------------------------------------------------------------
+# Events
+# ------------------------------------------------------------------------------
 
 @client.event
-async def on_ready():
-    """Print messages to indicate a successful login."""
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    """Event handler for reactions.
 
-@client.event
-async def on_raw_reaction_add(payload):
-    """
-    Event handler for reactions.
     We check reactions in the emojis list to decide what to set the embed to.
     Then edit the embed in the original message which received a reaction.
+    
     Parameters
     ----------
     payload : discord.RawReactionActionEvent
         Represents the payload for a on_raw_reaction_add() or on_raw_reaction_remove() event.
+    
     Returns
     -------
     None.
     """
     emoji = payload.emoji.name
-    if not is_me(payload.user_id) and emoji in emojis:
+    if not is_me(payload.user_id) and emoji in EMOJIS:
         m_id = payload.message_id
         message = await client.get_channel(payload.channel_id).fetch_message(m_id)
         embed = message.embeds[0]
@@ -110,114 +121,17 @@ async def on_raw_reaction_add(payload):
 
         await message.edit(embed=new_embed)
 
-#%% COMMANDS
+@client.event
+async def on_ready():
+    """Print messages to indicate a successful login."""
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
 
-@client.command()
-@commands.guild_only()
-async def prefix(ctx, *, arg):
-    """Set the prefix to use for this guild."""
-    id = str(ctx.guild.id)
-    guild_prefixes[id] = default_prefix if not arg else arg
-    with open(prefix_file, 'w+') as f:
-        json.dump(guild_prefixes, f)
-    await ctx.send(f'Command prefix set to: *{guild_prefixes[id]}*')
-
-@client.command(name='post',
-                brief='Posts given number of posts from a subreddit.')
-async def post(ctx, *args):
-    if len(args)>0:
-        try:
-            submission = reddit.submission(url=args[0])
-            embed = create_submission_embed(submission)
-            message = await ctx.send(embed=embed)
-            for emoji in emojis:
-                await message.add_reaction(emoji)
-        except InvalidURL:
-            await ctx.send('Enter a valid reddit post URL.')
-        except NotFound:
-            await ctx.send('Enter a valid reddit post URL.')
-    else:
-        await ctx.send('Please specify post URL.  Usage: !post [URL]')
-
-@client.command(name='posts',
-                brief='Posts given number of posts from a subreddit.',
-                aliases = aliases)
-async def posts(ctx, *args):
-    """
-    Return a given number of posts, up to 10, sorted by the alias that this was invoked with.
-    Parameters
-    ----------
-    ctx : discord.ext.commands.Context
-        The context in which this command was called.
-    *args : list
-        The arguments that the user passed through.
-        If the user does not specify a subreddit, or the given subreddit does not exist, send an error message.
-    Returns
-    -------
-    None.
-    """
-
-    # check for invocation errors
-    command = ctx.invoked_with
-    if command == 'posts':
-        return
-    if not args:
-        await ctx.send(f'Please specify subreddit. Usage: !{command} [subreddit]')
-        return
-
-    sub = args[0]
-    # extract options from args
-    args, options = extract_options(args)
-
-    # extract sort method and retrieval count from command
-    sort_by, lim = extract_command_info(command)
-
-    # get the results from our request to Reddit.
-    if sort_by == 'search':
-        sort_by = 'relevance'
-        tf = 'all'
-        sub = 'all'
-        if options:
-            for o in options:
-                if o in search_sorts:
-                    sort_by = o
-                elif o in filters:
-                    tf = o
-                elif sub_exists(o):
-                    sub = o
-        results = reddit.subreddit(sub).search(to_query_string(args), sort=sort_by, time_filter=tf, limit=lim)
-    else:
-        if not sub_exists(sub):
-            await ctx.send(f'Specified subreddit {sub} does not exist.')
-            return
-        # get the number of stickied posts, so we can ignore them.
-        num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=10) if s.stickied])
-        results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied]
-
-    # format each submission into embedded messages and send to Discord.
-    for submission in results:
-        embed = create_submission_embed(submission)
-        message = await ctx.send(embed=embed)
-        for emoji in emojis:
-            await message.add_reaction(emoji)
-
-@client.command(name='user',
-                brief='Finds specified Reddit user.')
-async def user(ctx, *, arg):
-    """Get a Reddit user's profile and send the embedded info to discord."""
-    redditor = reddit.redditor(arg)
-    if user_exists(redditor):
-        embed = create_user_embed(redditor)
-    else:
-        embed = create_empty_user_embed(redditor.name)
-    await ctx.send(embed=embed)
-
-@client.command(name='help',
-                brief='Help menu.')
-async def help(ctx, *args):
-    """Custom help command. args contains specific commands."""
-    embed = create_help_embed(*args)
-    await ctx.send(embed=embed)
+# ------------------------------------------------------------------------------
+# Commands
+# ------------------------------------------------------------------------------
 
 @client.command(name='auto',
                 brief='toggles auto feed of a subreddit or multisubreddit to this channel.',
@@ -249,97 +163,182 @@ async def auto(ctx, *args):
     autofeed = feed.start(ctx, reddit.subreddit(sub))
     await ctx.send(f'autofeed toggled to **[ON]** for subreddit{plural}: *{sub}*')
 
+async def do_nothing():
+    pass
+
 @tasks.loop()
 async def feed(ctx, subreddit):
     """Task for autofeed command. While autofeed is on, this will keep checking for new posts."""
     for submission in subreddit.stream.submissions(pause_after=0, skip_existing=True):
         if submission is None:
-            await asyncio.sleep(.001) # sleep for 1 millisecond, let other tasks run
+            await do_nothing() # return to the event loop to let other coroutines run.
             continue
         embed = create_submission_embed(submission)
         message = await ctx.send(embed=embed)
-        for emoji in emojis:
+        for emoji in EMOJIS:
             await message.add_reaction(emoji)
 
-#%% EMBED CREATION
+@client.command(name='help',
+                brief='Help menu.')
+async def help(ctx, *args):
+    """Custom help command. args contains specific commands.
 
-def create_user_embed(redditor, url=''):
-    """
-    Return an embed containing the user profile information of redditor.
     Parameters
     ----------
-    redditor : praw.models.Redditor
-        The user to create the embed for.
-    url : string, optional
-        The url to the original post (if applicable). The default is ''.
+    ctx : discord.ext.commands.Context
+        The context in which this command was called.
+    *args : list
+        The arguments that the user passed through.
+        Specifying a command or commands will output only those specified.
+        If no args are passed, information on all commands will be shown.
+    
     Returns
     -------
-    embed : discord.embeds.Embed
-        The embed object to return.
+    None.
     """
-    embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0x0051b7, description=url)
-    embed.set_author(name=f'u/{redditor.name}', icon_url=redditor.icon_img)
-    embed.set_thumbnail(url=redditor.icon_img)
-    embed.add_field(name='User\'s Karma: ', value=redditor.comment_karma + redditor.link_karma)
-    embed.add_field(name='URL to profile: ', value=base_url + '/user/' + redditor.name)
+    embed = create_help_embed(*args)
+    await ctx.send(embed=embed)
 
-    top_comment = list(redditor.comments.top("all", limit=1))
-    if len(top_comment) > 0:
-        embed.add_field(name=f'\nTop comment by {redditor.name}: ', value=top_comment[0].body, inline = False)
+@client.command(name='post',
+                brief='Posts given number of posts from a subreddit.')
+async def post(ctx, *args):
+    """Post to the Discord channel from a direct Reddit Link.
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context in which this command was called.
+    *args : list
+        The arguments that the user passed through.
+        Only the first argument will be checked.
+    
+    Returns
+    -------
+    None.
+    """
+    if len(args) > 0:
+        try:
+            submission = reddit.submission(url=args[0])
+            embed = create_submission_embed(submission)
+            message = await ctx.send(embed=embed)
+            for emoji in EMOJIS:
+                await message.add_reaction(emoji)
+        except InvalidURL:
+            await ctx.send('Enter a valid reddit post URL.')
+        except NotFound:
+            await ctx.send('Enter a valid reddit post URL.')
     else:
-        embed.add_field(name=f'Top comment by {redditor.name}: ', value='User has no comments!', inline = False)
+        await ctx.send('Please specify post URL.  Usage: !post [URL]')
 
-    return embed
+@client.command(name='posts',
+                brief='Posts given number of posts from a subreddit.',
+                aliases = ALIASES)
+async def posts(ctx, *args):
+    """Return a given number of posts.
 
-def create_empty_user_embed(redditor, url=''):
-    """Return an embed for a nonexistent redditor."""
-    return discord.Embed(title='User does not exist, or has been deleted.', color=0x0051b7, description=url)
-
-def create_submission_embed(submission):
+    A maximum of 10 posts is allowed.
+    Posts are sorted by the alias that this was invoked with.
+    
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context in which this command was called.
+    *args : list
+        The arguments that the user passed through.
+        If the user does not specify a subreddit, or the given subreddit does not exist, send an error message.
+    
+    Returns
+    -------
+    None.
     """
-    Return an embed object for a submission.
+
+    # check for invocation errors
+    command = ctx.invoked_with
+    if command == 'posts':
+        return
+    if not args:
+        await ctx.send(f'Please specify subreddit. Usage: !{command} [subreddit]')
+        return
+
+    sub = args[0]
+    # extract options from args
+    args, options = extract_options(args)
+
+    # extract sort method and retrieval count from command
+    sort_by, lim = extract_command_info(command)
+
+    # get the results from our request to Reddit.
+    if sort_by == 'search':
+        sort_by = 'relevance'
+        tf = 'all'
+        sub = 'all'
+        if options:
+            for o in options:
+                if o in SEARCH_SORTS:
+                    sort_by = o
+                elif o in FILTERS:
+                    tf = o
+                elif sub_exists(o):
+                    sub = o
+        results = reddit.subreddit(sub).search(to_query_string(args), sort=sort_by, time_filter=tf, limit=lim)
+    else:
+        if not sub_exists(sub):
+            await ctx.send(f'Specified subreddit {sub} does not exist.')
+            return
+        # get the number of stickied posts, so we can ignore them.
+        num_stickied = len([s for s in getattr(reddit.subreddit(sub), sort_by)(limit=10) if s.stickied])
+        results = [s for s in getattr(reddit.subreddit(sub), sort_by)(limit=lim+num_stickied) if not s.stickied]
+
+    # format each submission into embedded messages and send to Discord.
+    for submission in results:
+        embed = create_submission_embed(submission)
+        message = await ctx.send(embed=embed)
+        for emoji in EMOJIS:
+            await message.add_reaction(emoji)
+
+@client.command()
+@commands.guild_only()
+async def prefix(ctx, *, arg):
+    """Set the prefix to use for this guild."""
+    id = str(ctx.guild.id)
+    guild_prefixes[id] = default_prefix if not arg else arg
+    with open(prefix_file, 'w+') as f:
+        json.dump(guild_prefixes, f)
+    await ctx.send(f'Command prefix set to: *{guild_prefixes[id]}*')
+
+@client.command(name='user',
+                brief='Finds specified Reddit user.')
+async def user(ctx, *, arg):
+    """Get a Reddit user's profile and send the embedded info to discord."""
+    redditor = reddit.redditor(arg)
+    if user_exists(redditor):
+        embed = create_user_embed(redditor)
+    else:
+        embed = create_empty_user_embed(redditor.name)
+    await ctx.send(embed=embed)
+
+# ------------------------------------------------------------------------------
+# Embed Creation
+# ------------------------------------------------------------------------------
+
+def create_body_embed(submission: praw.models.Submission) -> discord.embeds.Embed:
+    """Return an embed object for the text body (if applicable) of a submission.
+    
     Parameters
     ----------
     submission : praw.models.Submission
         A reddit submission.
+    
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
     """
     url = submission.permalink
-    abridged_title = (submission.title[:title_lim])
-    if len(submission.title) > title_lim:
+    abridged_title = (submission.title[:TITLE_LIM])
+    if len(submission.title) > TITLE_LIM:
         abridged_title += '...'
-    embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url+url)
-    if user_exists(submission.author):
-        embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
-    else:
-        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
-    new_url = url_morph(submission.url)
-    if not submission.is_self and is_image(new_url):
-        embed.set_image(url=new_url)
-    embed.add_field(name='Upvotes:', value=submission.score)
-    embed.set_thumbnail(url='https://i.imgur.com/5uefD9U.png')
-    return embed
-
-def create_body_embed(submission):
-    """
-    Return an embed object for the text body (if applicable) of a submission.
-    Parameters
-    ----------
-    submission : praw.models.Submission
-        A reddit submission.
-    Returns
-    -------
-    embed : discord.embeds.Embed
-        The embed object to return.
-    """
-    url = submission.permalink
-    abridged_title = (submission.title[:title_lim])
-    if len(submission.title) > title_lim:
-        abridged_title += '...'
-    embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
+    embed = discord.Embed(title=abridged_title, color=0xff5700, description=BASE_URL+url)
 
     if user_exists(submission.author):
         embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
@@ -347,31 +346,32 @@ def create_body_embed(submission):
         embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
 
     if submission.is_self:
-        abridged_text = (submission.selftext[:body_lim])
-        if len(submission.selftext) > body_lim:
+        abridged_text = (submission.selftext[:BODY_LIM])
+        if len(submission.selftext) > BODY_LIM:
             abridged_text += '...'
         embed.add_field(name='Text:', value=abridged_text)
     else:
         embed.add_field(name='No text!', value='This post contains no text body.')
     return embed
 
-def create_comment_embed(submission):
-    """
-    Return an embed object for the comments of a submission.
+def create_comment_embed(submission: praw.models.Submission) -> discord.embeds.Embed:
+    """Return an embed object for the comments of a submission.
+    
     Parameters
     ----------
     submission : praw.models.Submission
         A reddit submission.
+    
     Returns
     -------
     embed : discord.embeds.Embed
         The embed object to return.
     """
     url = submission.permalink
-    abridged_title = (submission.title[:title_lim])
-    if len(submission.title) > title_lim:
+    abridged_title = (submission.title[:TITLE_LIM])
+    if len(submission.title) > TITLE_LIM:
         abridged_title += '...'
-    embed = discord.Embed(title=abridged_title, color=0xff5700, description=base_url + url)
+    embed = discord.Embed(title=abridged_title, color=0xff5700, description=BASE_URL+url)
     if user_exists(submission.author):
         embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
     else:
@@ -382,8 +382,8 @@ def create_comment_embed(submission):
     for i, v in enumerate(best_comments):
         if i == 10:
             break
-        abridged_comment = (v.body[:comment_lim])
-        if len(v.body) > comment_lim:
+        abridged_comment = (v.body[:COMMENT_LIM])
+        if len(v.body) > COMMENT_LIM:
             abridged_comment += '...'
         if user_exists(v.author):
             embed.add_field(name=f'{v.author.name} - {v.score} points' , value=abridged_comment, inline = False)
@@ -395,9 +395,9 @@ def create_comment_embed(submission):
 
     return embed
 
-def create_help_embed(*args):
-    """
-    Return an embed object for the help function output.
+def create_help_embed(*args) -> discord.embeds.Embed:
+    """Return an embed object for the help function output.
+    
     Returns
     -------
     embed : discord.embeds.Embed
@@ -405,7 +405,7 @@ def create_help_embed(*args):
     """
 
     # check for post command.
-    posts = [s for s in sort if s != 'search']
+    posts = [s for s in SORT if s != 'search']
     posts.append('posts')
 
     # autofeed aliases
@@ -425,10 +425,17 @@ def create_help_embed(*args):
     if any(arg in args for arg in ['reactions', 'reaction']) or not args:
         embed.add_field(name='Reaction Usage', value=f'\
                         Click on one of these underneath a post to react to it.\n\n\
-                        {emojis[0]} : display post\'s summary (default)\n\n\
-                        {emojis[1]} : display post\'s body\n\n\
-                        {emojis[2]} : display post\'s author profile\n\n\
-                        {emojis[3]} : dispay post\'s comments\n', inline=False)
+                        {EMOJIS[0]} : display post\'s summary (default)\n\n\
+                        {EMOJIS[1]} : display post\'s body\n\n\
+                        {EMOJIS[2]} : display post\'s author profile\n\n\
+                        {EMOJIS[3]} : dispay post\'s comments\n', inline=False)
+
+    if any(arg in args for arg in ['help']) or not args:
+        embed.add_field(name='Help Commands', value=f'Shows this message.\
+                        Individual Command(s) can be specified to filter the unspecified command(s)..\n\n\
+                        !help\n\n\
+                        !help [command 1] [command 2] [command ...]', inline=False)
+        auto_ex = '!auto memes dankmemes MemeEconomy\n'
 
     if any(arg in args for arg in ['auto', 'feed', 'autofeed']) or not args:
         embed.add_field(name='Autofeed Commands', value=f'Requires at least 1 subreddit.\
@@ -447,8 +454,8 @@ def create_help_embed(*args):
                                 !post [URL]', inline=False)
         post_ex = '!post https://www.reddit.com/...\n'
     if any(arg in args for arg in ['search']) or not args:
-        ss = ' | '.join(search_sorts)
-        fs = ' | '.join(filters)
+        ss = ' | '.join(SEARCH_SORTS)
+        fs = ' | '.join(FILTERS)
         embed.add_field(name='Search Commands', value=f'Requires a number and search terms.\
                         Post up to 10 posts filtered by your search terms.\
                         Arguments with the \'-\' prefix are optional.\
@@ -458,7 +465,7 @@ def create_help_embed(*args):
     if any(arg in args for arg in ['user']) or not args:
         embed.add_field(name='User Commands', value='Search for a user\'s profile.\n\n\
                         !user [reddit username]', inline=False)
-        user_ex = '!user gallowboob\n'
+        user_ex = '!user Holofan4life\n'
 
     if any(arg in args for arg in ['prefix']) or not args:
         embed.add_field(name='Prefix Commands', value='Change EpicBot\'s prefix\
@@ -469,18 +476,134 @@ def create_help_embed(*args):
     if not (len(args) == 1 and 'reactions' in args):
         embed.add_field(name='Examples', value=f'{auto_ex}\n{posts_ex}\n{post_ex}\n\
                            {search_ex}\n{user_ex}\n\
-                           {prefix_ex}\n\n!help [command 1] [command 2] [command ...]', inline=False)
+                           {prefix_ex}\n\n!help auto prefix', inline=False)
     return embed
 
-#%% OTHER HELPERS
-
-def sub_exists(subreddit):
+def create_submission_embed(submission: praw.models.Submission) -> discord.embeds.Embed:
+    """Return an embed object for a submission.
+    
+    Parameters
+    ----------
+    submission : praw.models.Submission
+        A reddit submission.
+    
+    Returns
+    -------
+    embed : discord.embeds.Embed
+        The embed object to return.
     """
-    Return whether a given subreddit exists.
+    url = submission.permalink
+    abridged_title = (submission.title[:TITLE_LIM])
+    if len(submission.title) > TITLE_LIM:
+        abridged_title += '...'
+    embed = discord.Embed(title=abridged_title, color=0xff5700, description=BASE_URL+url)
+    if user_exists(submission.author):
+        embed.set_author(name=f'u/{submission.author.name}', icon_url=submission.author.icon_img)
+    else:
+        embed.set_author(name='u/deleted', icon_url='https://i.imgur.com/ELSjbx7.png')
+    new_url = url_morph(submission.url)
+    if not submission.is_self and is_image(new_url):
+        embed.set_image(url=new_url)
+    embed.add_field(name='Upvotes:', value=submission.score)
+    embed.set_thumbnail(url='https://i.imgur.com/5uefD9U.png')
+    return embed
+
+def create_user_embed(redditor: praw.models.Redditor, url='') -> discord.embeds.Embed:
+    """Return an embed containing the user profile information of redditor.
+    
+    Parameters
+    ----------
+    redditor : praw.models.Redditor
+        The user to create the embed for.
+    url : string, optional
+        The url to the original post (if applicable). The default is ''.
+    
+    Returns
+    -------
+    embed : discord.embeds.Embed
+        The embed object to return.
+    """
+    embed = discord.Embed(title=f'{redditor.name}\'s Profile', color=0x0051b7, description=url)
+    embed.set_author(name=f'u/{redditor.name}', icon_url=redditor.icon_img)
+    embed.set_thumbnail(url=redditor.icon_img)
+    embed.add_field(name='User\'s Karma: ', value=redditor.comment_karma + redditor.link_karma)
+    embed.add_field(name='URL to profile: ', value=BASE_URL + '/user/' + redditor.name)
+
+    top_comment = list(redditor.comments.top("all", limit=1))
+    if len(top_comment) > 0:
+        embed.add_field(name=f'\nTop comment by {redditor.name}: ', value=top_comment[0].body, inline = False)
+    else:
+        embed.add_field(name=f'Top comment by {redditor.name}: ', value='User has no comments!', inline = False)
+
+    return embed
+
+def create_empty_user_embed(redditor, url='') -> discord.embeds.Embed:
+    """Return an embed for a nonexistent redditor."""
+    return discord.Embed(title='User does not exist, or has been deleted.', color=0x0051b7, description=url)
+
+# ------------------------------------------------------------------------------
+# Other Helpers
+# ------------------------------------------------------------------------------
+
+def extract_command_info(command: str) -> Tuple[str, int]:
+    """Return the invocation alias (sort_by) and limit given by the command.
+    
+    Parameters
+    ----------
+    command : str
+        The invoked command.
+    
+    Returns
+    -------
+    sort_by : str
+        The subreddit sorting method.
+    lim : int
+        How many submissions to post.
+    """
+    sort_by = ''.join([s for s in SORT if s in command]).lower()
+    lim = command.replace(sort_by, '')
+    if not lim:
+        lim = 5
+    lim = int(lim)
+    return sort_by, lim
+
+def extract_options(args: List[str]) -> Tuple[List[str], List[str]]:
+    """Extract the options from args and returns them as a list.
+    
+    Parameters
+    ----------
+    args : List[str]
+        The argument list.
+    
+    Returns
+    -------
+    args : List[str]
+        The args list without any options in it.
+    options : List[str]
+        The options that the command was invoked with.
+    """
+    options = []
+    for s in args:
+        if s[0] == '-':
+            options.append(s[1:])
+    return [s for s in args if s[1:] not in options], options
+
+def is_image(url: str) -> bool:
+    """Return whether or not the given url links directly to an image."""
+    return any(e in url for e in EXTENSIONS)
+
+def is_me(_id):
+    """Return whether the given id is the bot's id."""
+    return _id == client.user.id
+
+def sub_exists(subreddit: str) -> bool:
+    """Return whether a given subreddit exists.
+    
     Parameters
     ----------
     subreddit : praw.models.Subreddit
         The subreddit object to check.
+    
     Returns
     -------
     bool
@@ -493,7 +616,30 @@ def sub_exists(subreddit):
         exists = False
     return exists
 
-def user_exists(user):
+def to_query_string(args: List[str]) -> str:
+    """Return the arguments as a single string."""
+    return ' '.join(args)
+
+def url_morph(url: str) -> str:
+    """Return a an image url with the extension edited for the embed.
+    
+    Parameters
+    ----------
+    url : str
+        The url to morph.
+    
+    Returns
+    -------
+    url : str
+        the url with a proper extension for embedding into discord.
+    """
+    if 'gifv' in url:
+        url = url[:-1]
+    if 'imgur' in url and not any(e in url for e in EXTENSIONS):
+        url += '.jpg'
+    return url
+
+def user_exists(user: praw.models.User) -> bool:
     """Return whether a given user exists."""
     try:
         if user is None:
@@ -504,83 +650,17 @@ def user_exists(user):
         return False
     return True
 
-def to_query_string(args):
-    """Return the arguments as a single string."""
-    return ' '.join(args)
-
-def is_image(url):
-    """Return whether or not the given url links to an image."""
-    return any(e in url for e in extensions)
-
-def url_morph(url):
-    """
-    Return a an image url with the extension edited for the embed.
-    Parameters
-    ----------
-    url : string
-        The url to morph.
-    Returns
-    -------
-    url : string
-        the url with a proper extension for embedding into disord.
-    """
-    if 'gifv' in url:
-        url = url[:-1]
-    if 'imgur' in url and not any(e in url for e in extensions):
-        url += '.jpg'
-    return url
-
-def extract_command_info(command):
-    """
-    Return the invocation alias (sort_by) and limit given by the command.
-    Parameters
-    ----------
-    command : string
-        The invoked command.
-    Returns
-    -------
-    sort_by : string
-        The subreddit sorting method.
-    lim : string
-        How many submissions to post.
-    """
-    sort_by = ''.join([s for s in sort if s in command]).lower()
-    lim = command.replace(sort_by, '')
-    if not lim:
-        lim = 5
-    lim = int(lim)
-    return sort_by, lim
-
-def extract_options(args):
-    """
-    extracts the options from args and returns them as a list
-    Parameters
-    ----------
-    args : list
-        The argument list.
-    Returns
-    -------
-    args : list
-        The args list without any options in it.
-    options : list
-        The options that the command was invoked with.
-    """
-    options = []
-    for s in args:
-        if s[0] == '-':
-            options.append(s[1:])
-    return [s for s in args if s[1:] not in options], options
-
-#%% MAIN
+# ------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------
 
 def main():
-	try:
-		client.run(TOKEN)
-	except KeyboardInterrupt:
-		print('exiting\n')
-		exit(0)
-	except:
-		pass
+    try:
+        client.run(TOKEN)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('exiting\n')
 
 if __name__ == '__main__':
     main()

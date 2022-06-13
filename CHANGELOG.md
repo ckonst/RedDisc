@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.4]
+Updated Help Menu, Style, and formatting.
+
+### Added
+- Unit Tests that actually test the code.
+- Typehints, and some more comments.
+- requirements.txt
+
 ## [1.2.3]
 A few bugfixes, test script
 ###

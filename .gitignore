@@ -143,3 +143,6 @@ dmypy.json
 
 # this file should probably not be in a public repository. 
 prefixes.json
+
+# VS Code stuff
+.vs

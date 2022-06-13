@@ -1,9 +1,10 @@
 import epicbot
-from discord.ext import commands
 import os
 
-import nest_asyncio
-nest_asyncio.apply()
+from discord.ext import commands
+
+# import nest_asyncio
+# nest_asyncio.apply()
 
 test_bot = commands.Bot(command_prefix='t!')
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -39,10 +40,10 @@ async def on_ready():
     print(test_bot.user.id)
     print('------')
 
-try:
-	test_bot.run(TOKEN)
-except KeyboardInterrupt:
-	print('exiting\n')
-	exit(0)
-except:
-	pass
+    try:
+        test_bot.run(TOKEN)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('exiting\n')
+        

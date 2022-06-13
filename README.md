@@ -14,6 +14,15 @@ A Discord bot that interfaces with Reddit.
 
 ## Command Usage
 
+### Help Commands
+
+Shows this message. 
+Individual Command(s) can be specified to filter the unspecified command(s).
+
+!help
+
+!help [command 1] [command 2] [command ...]
+
 ### Autofeed Commands
 
 Requires at least 1 subreddit. Automatically post new submissions as they are posted to reddit.
@@ -52,6 +61,8 @@ Change EpicBot's prefix If no prefix is provided then it will reset to the defau
 
 !search5 Covid-19 -worldnews -top -alltime
 
-!user gallowboob
+!user Holofan4life
 
 !prefix ~
+
+!help auto prefix
